@@ -1,6 +1,2 @@
-ant/
-bin/
-dist/
-docs/
-out/
-test/
+*.iml
+.idea/
