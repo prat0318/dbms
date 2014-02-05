@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView android:id="@+id/label"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="JE Data on ListView"
+    />
+<EditText android:id="@+id/position"
+    android:layout_width="100dip"
+    android:layout_height="wrap_content"
+    android:background="@android:drawable/editbox_background"
+    android:layout_below="@id/label"
+    />
+<Button android:id="@+id/jump"
+    android:layout_width="60dip"
+    android:layout_height="35dip"
+    android:text="jump"
+    android:layout_below="@id/label"
+    android:layout_toRightOf="@id/position"
+    />
+<Button android:id="@+id/jump_start" 
+    android:layout_width="80dip" 
+    android:layout_height="35dip" 
+    android:text="To Start" 
+    android:layout_below="@id/label"
+    android:layout_toRightOf="@id/jump" 
+    />
+<Button android:id="@+id/jump_end"
+    android:layout_width="70dip"
+    android:layout_height="35dip"
+    android:text="To End"
+    android:layout_below="@id/label"
+    android:layout_toRightOf="@id/jump_start" 
+    />
+<ListView android:id="@id/android:list"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:drawSelectorOnTop="false"
+    android:layout_below="@id/jump"
+    />
+<TextView android:id="@id/android:empty"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:text="No data"
+    android:layout_below="@id/jump"
+    />
+
+</RelativeLayout>
+
+

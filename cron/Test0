@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 12.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>Project 1, CS386D</title>
+
+<style type="text/css">
+.style1 {
+	font-family: Arial;
+}
+.style2 {
+	font-family: "Courier New", Courier, monospace;
+	margin-left: 40px;
+}
+.style3 {
+	color: #FF0000;
+}
+</style></head>
+<body class="style1">
+
+<table style="border-collapse: collapse;" bgcolor="#00ffff" border="1" bordercolor="#111111" cellpadding="0" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td width="100%">
+    <h1 align="center"><font face="Arial">Project 1: </font>
+	<span class="style1">SQL Refresher</span></h1>
+    
+    </td>
+  </tr>
+</tbody></table>
+
+<p class="style1">This assignment is to refresh your memory (or update your 
+memory) on SQL and core relational database concepts.&nbsp; <span style="font-weight: bold; color: red;">No group projects are allowed</span>.&nbsp; You can use one of two different platforms for this project:</p>
+<ul class="style1">
+  <li><a href="#Oracle">An Oracle DBMS</a> or</li>
+  <li><a href="#Access">Microsoft Access</a> (which comes with MS Office)</li>
+</ul>
+<span class="style1">And <a href="#Queries">write a set of SQL queries</a> for a given database.  You will <a href="#WhatToSubmit">submit your queries and answers</a>.<br>
+<br>
+</span>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(51, 255, 51);">
+      <h2><a name="Oracle"></a>Oracle</h2>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+	
+<ul>
+  <li><span style="font-family: Arial;">Install Oracle XE 11g, <span style="color: red;">which runs only on linux64 or windows32 platforms</span>.&nbsp; Download and installation instructions are <a href="http://www.oracle.com/technetwork/database/database-technologies/express-edition/downloads/index.html">described here</a>.</span></li>
+</ul>
+
+
+	<ul>
+  <li>
+    <p class="style1">Install Oracle SQLDeveloper on a Windows machine to use in 
+	this assignment.&nbsp; Installation instructions are
+	<a href="SQLDeveloper/index.html">
+	described here</a>.&nbsp;&nbsp;</p>
+
+	</li>
+
+	<li>
+	<p class="style1">Next, use the following <a href="MailOrder.zip">SQL scripts</a>, which will create or drop a 
+	set of relations and populate them with tuples.&nbsp; You will use this 
+	database to process the following queries. <br>
+</p></li>
+</ul>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(51, 255, 51);">
+      <h2><a name="Access"></a>Access</h2>
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <li>Use the create script in <a href="MailOrder.zip">SQL scripts</a> to create an Excel file for six table, and then use Access to load each file as a table.&nbsp; You
+will use this database to process the following queries.</li>
+</ul>
+<br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(51, 255, 51);">
+      <h2><a name="Queries"></a>Queries to Write (and Answers to Get)</h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="style1">Now write SQL queries to answer the following questions.&nbsp; 
+Useful and short tutorials on SQL can be found <a href="http://www.sqlcourse.com/index.html">
+here</a> and <a href="http://www.1keydata.com/sql/sql.html">
+here</a>, should you need them.</p>
+<ol>
+	<li>
+	<p class="style1">What is the price of the part named "Dirty Harry"?</p>
+	</li>
+	<li>
+	<p class="style1">What orders have been shipped after date '03-feb-95'?</p>
+	</li>
+	<li>
+	<p class="style1">What are the ono and cname values of customers whose 
+	orders have not been shipped (i.e., the shipped column has a null value)?</p>
+	</li>
+	<li>
+	<p class="style1">Retrieve the names of parts whose quantity on hand (QOH) 
+	is between 20 and 70.</p>
+	</li>
+	<li>
+	<p class="style1">Get all unique pairs of cno values for customers that have 
+	the same zip code.</p>
+	</li>
+	<li>
+	<p class="style1">Create a nested SQL select statement that returns the 
+	cname values of customers who have placed orders with employees living in 
+	Fort Dodge.</p>
+	</li>
+	<li>
+	<p class="style1">What orders have been shipped to Wichita?</p>
+	</li>
+	<li>
+	<p class="style1">Get the pname values of parts with the lowest price.</p>
+	</li>
+	<li>
+	<p class="style1">What is the name of the part with the lowest price? (use 
+	qualified comparison in your predicate, i.e., &lt;=all).</p>
+	</li>
+	<li>
+	<p class="style1">What parts cost more than the most expensive Land Before 
+	Time part? (Hint: you should use pattern-matching, e.g., pname like 'Land 
+	Before Time%').</p>
+	</li>
+	<li>
+	<p class="style1">Write a correlated query to return the cities of zipcodes 
+	from which an order has been placed.</p>
+	</li>
+	<li>
+	<p class="style1">Get cname values of customers who have placed at least one 
+	part order through employee with eno = 1000.</p>
+	</li>
+	<li>
+	<p class="style1">Get the total number of customers.</p>
+	</li>
+	<li>
+	<p class="style1">Get the pname values of parts that cost more than the 
+	average cost of all parts.</p>
+	</li>
+	<li>
+	<p class="style1">For each part, get pno and pname values along with the 
+	total sales in dollars.</p>
+	</li>
+	<li>
+	<p class="style1">For each part, get pno and pname values along with the 
+	total sales in dollars, but only for total sales exceeding $200.</p>
+	</li>
+	<li>
+	<p class="style1">Repeat the last 2 queries, except this time create a view 
+	to simplify your work. Define the view and each query on that view.</p>
+	</li>
+	<li>
+	<p class="style1">Delete order 1021 and its order details.</p>
+	</li>
+	<li>
+	<p class="style1">Increase the cost of all parts by 5%.</p>
+	</li>
+	<li>
+	<p class="style1">Retrieve employees by name in reverse alphabetical order.</p>
+	</li>
+	<li>
+	<p class="style1">What tuples of Employees and Zipcodes do not participate 
+	in a join of these relations? Use the outerjoin and minus operations.</p></li>
+</ol><br>
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: rgb(51, 255, 51);">
+      <h2><a name="WhatToSubmit"></a>What to Submit</h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ol>
+  <li>Create a single PDF file that:</li>
+</ol>
+<ul style="margin-left: 40px;">
+  <li>lists each query</li>
+  <li>followed by the answer of that query</li>
+</ul>
+<ol start="2">
+  <li>If you used Oracle, submit a single SQL script with comments that processes the 
+above queries in the order listed.&nbsp; Comments are lines starting with --.&nbsp; 
+An example format of your submission is:</li>
+</ol>
+
+<p class="style2">-- query 1: what is the price of the part named "Dirty Harry"?<br>
+<br>
+select ...<br>
+<br>
+-- query 2: What orders have been shipped after date '03-feb-95'?<br>
+<br>
+select ...</p>
+<ol start="3">
+  <li>If you used Access, submit your Excel files and Access database.&nbsp; Your Access database should clearly label each query.</li>
+</ol>
+
+
+</body></html>

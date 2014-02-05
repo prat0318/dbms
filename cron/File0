@@ -1,0 +1,639 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office"><head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+  
+  <link rel="shortcut icon" href="Course/favicon.ico"><title>cs386d Database Systems</title>
+  
+
+  
+  
+  <style type="text/css">
+.style2 {
+	font-family: Arial;
+}
+.style3 {
+	background-color: #FFFFFF;
+}
+.style4 {
+	background-color: #FFFF00;
+}
+.style5 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+.style6 {
+	background-color: #00FFFF;
+}
+.style7 {
+	background-color: #00FFFF;
+	font-family: Arial;
+}
+  </style></head><body style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);" alink="#ee0000" link="#0000ee" vlink="#551a8b">
+<center>
+
+<div align="center">
+
+<center>
+
+<table id="AutoNumber1" style="border-collapse: collapse; width: 773px; height: 307px; background-color: rgb(0, 255, 255);" border="2" bordercolor="#111111" cellpadding="2">
+  <tbody>
+    <tr>
+      <td colspan="4" rowspan="1" style="vertical-align: top; text-align: center; width: 282px;"><big><big><big><font color="#0000ff" face="Arial"><strong>CS 386d Database
+Systems</strong></font><br>
+      <font color="#0000ff" face="Arial"><strong>Spring 2014</strong></font></big></big></big></td>
+    </tr>
+    <tr>
+      <td colspan="1" rowspan="10" style="vertical-align: middle; width: 116px;"><img style="width: 189px; height: 194px;" alt="" src="Course/rubricks.jpg" align="middle"><br>
+      </td>
+      <td colspan="1" rowspan="2" style="width: 132px; text-align: center;" height="19"><span style="font-family: Arial;"><span style="font-weight: bold;">Professor</span></span><br>
+</td>
+      <td style="width: 154px;" height="19"><font face="Arial"><a title="Don Batory" href="http://www.cs.utexas.edu/users/dsb">Prof. Don
+Batory</a>&nbsp;&nbsp; </font></td>
+      <td style="width: 282px;" height="19"><font face="Arial"> <a title="Don Batory" href="mailto:batory@cs.utexas.edu?subject=cs386d%20question">batory@cs.utexas.edu</a></font></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span class="style2">office hours <br>
+      </span></td>
+      <td style="vertical-align: top;"><span class="style2">TBD</span></td>
+    </tr>
+<tr>
+      <td colspan="1" rowspan="2" style="width: 132px; font-weight: bold; text-align: center;" height="19"><span class="style2">TA</span></td>
+      <td style="width: 154px;" class="style2" height="19"><span class="style2">Akanksha Bansal
+
+	</span></td>
+      <td class="style2" style="width: 282px;" height="19"><a href="mailto:akankshabansal90@gmail.com?subject=cs386d%20question">akankshabansal90@gmail.com</a></td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span class="style2"></span><span class="style2">office hours</span><br>
+      </td>
+      <td style="vertical-align: top;"><span class="style2">1-3pm Wednesday, GDC 3.718F</span></td>
+    </tr>
+
+    
+    <tr>
+      <td style="width: 132px; text-align: center;" height="19"><b><font face="Arial">Room</font></b></td>
+      <td style="width: 282px;" colspan="2" height="19"><span class="style2"> GDC 4.304 <br>
+      </span></td>
+    </tr>
+    <tr>
+      <td style="width: 132px; text-align: center;" height="19"><b><font face="Arial">Time</font></b></td>
+      <td style="width: 282px;" colspan="2" height="19"><span class="style2">9:30-11:00
+Tuesday, Thursday</span></td>
+    </tr>
+    <tr>
+      <td style="width: 132px; text-align: center;" height="19"><b><font face="Arial">Unique#</font></b></td>
+      <td style="width: 282px;" colspan="2" height="19"><span class="style2"> 53993</span></td>
+    </tr>
+    <tr>
+      <td style="width: 132px; text-align: center;" height="19"><b><font face="Arial">Ground
+Rules</font></b></td>
+      <td style="width: 282px;" colspan="2" height="19"><a href="http://www.cs.utexas.edu/undergraduate-program/code-conduct/" style="font-family: 'Arial Narrow'; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; background-color: rgb(0, 255, 255);"><span class="style2">Code of Conduct and Academic Honesty</span></a></td>
+    </tr>
+    <tr>
+      <td style="width: 132px; text-align: center;" height="19"><b><font face="Arial">Your
+Grades</font></b></td>
+      <td style="width: 282px;" colspan="2" height="19"><font face="Arial"><a href="https://idp.its.utexas.edu/idp/Authn/UserPassword">UTCanvas</a><a href="https://utdirect.utexas.edu/diia/egb/"><br>
+      </a></font></td>
+    </tr>
+    <tr>
+      <td class="style2" style="width: 132px; text-align: center; font-weight: bold;" height="19"> Final Exam</td>
+      <td style="width: 282px;" colspan="2" height="19">
+      <p class="style2">when and where to be announced<br>
+      </p>
+      </td>
+    </tr>
+  </tbody>
+</table><br>
+<span style="font-family: Arial;"><span style="font-weight: bold;"></span></span>
+<table style="text-align: left; width: 273px; height: 100px;" border="0" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr align="center">
+      <td colspan="1" rowspan="1" style="vertical-align: top;"><a href="http://piazza.com/utexas/spring2014/cs386d?token=p3Lh3IZbRwp"><img style="border: 0px solid ; width: 168px; height: 60px;" alt="" src="Course/piazza.jpg"></a><br>
+      </td>
+    </tr>
+    <tr align="center">
+      <td colspan="1" rowspan="1" style="vertical-align: top;"><a href="Course/SurveyResults.pdf"><span style="font-weight: bold; font-family: Arial;"></span></a><a href="Course/SurveyResults.pdf"><img style="border: 0px solid ; width: 181px; height: 36px;" alt="" src="Course/studentSurveyResults.jpg"></a></td>
+    </tr>
+  </tbody>
+</table>
+<span style="font-family: Arial;"><span style="font-weight: bold;"></span></span><a href="Course/SurveyResults.pdf"><span style="font-weight: bold; font-family: Arial;"></span></a><a href="http://piazza.com/utexas/spring2014/cs386d?token=p3Lh3IZbRwp"><span style="font-family: Arial;"></span></a><br>
+
+</center>
+</div>
+</center>
+
+<hr align="left" color="#00ff00" size="5">
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial">Course Objectives</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><font face="Arial">This is a graduate-level introduction
+to the principles of relational database systems. We review
+and explain fundamental ideas and algorithms that are used in the
+construction of centralized DBMSs, distributed DBMSs,
+and database machines. Topics to be covered include:&nbsp; query
+processing and optimization, database machines, object-oriented
+databases, concurrency control and recovery. Recent directions in
+database research are also surveyed.</font></p>
+
+<p>
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial">Course Prerequisites</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<p><font face="Arial">All students must have taken undergraduate
+database or its equivalent. &nbsp;If you are in need of a database refresher, I recommend any version of this text:</font></p><ul><li><a href="http://www.amazon.com/Oracle-10g-Programming-A-Primer/dp/0321463048"><font face="Arial">R. Sunderraman, Oracle 10g Programming: A Primer</font></a></li></ul><p><span style="font-family: Arial;">It is a good text to present the (external, not internal) basics of databases.</span></p><p>
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial">Lecture Notes, Texts, and Class Lectures</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<p><font face="Arial">Notes for each lecture will be<span style="font-weight: bold;"> </span>posted immediately after a
+lecture.
+Class lectures are supplemented by papers. Both are available via
+hyperlinks in the <a href="#Course_Outline">course outline</a>
+below.&nbsp; </font><b><font color="#ff0000" face="Arial">Students
+are responsible for reading these papers.&nbsp; Remember: DO NOT PRINT
+THESE PAPERS ON CS PRINTERS! </font></b></p>
+
+<ul>
+
+  <li><font face="Arial">An excellent reference for concurrency control
+and recovery is by&nbsp; <a href="Readings/Bernstein.zip">Bernstein,
+Hadzilacos, &amp; Goodman, Concurrency Control and Recovery</a>.</font></li>
+  <li><font face="Arial">Additional postings on lecture notes, homework
+assignments, and software will be made available through this web page
+as they become available.</font></li>
+</ul>
+
+<p>
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial"><a name="presentations"></a>Presentations</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<p><font face="Arial">The last class periods of the semester
+are devoted to student group presentations. These presentations
+will survey recent results presented in major database conferences.
+Group lectures will be critiqued prior to the actual presentation
+to enhance quality and content.&nbsp; Topics for presentation can be
+chosen from any recent database conference, among them are:</font></p>
+
+<ul>
+
+  <li><font face="Arial"> <a href="http://www.informatik.uni-trier.de/%7Eley/db/conf/sigmod/index.html">ACM
+SIGMOD</a> </font> </li>
+  <li><font face="Arial"><a href="http://vldb.org/dblp/db/conf/vldb/index.html"> Very Large
+Database Conference</a> </font></li>
+</ul>
+
+<p>
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial"><a name="projects"></a>Programming
+Projects and Homework</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<p class="style2" align="left">A series of 4 programming
+projects is given in this course.&nbsp; The first project will refresh
+your
+memory on SQL and your use of DBMSs; you will build in the 2nd-4th an
+inverted file
+system using Berkeley DB (which is a file management system written in
+Java). An award (of no particular consequence) will be given to the
+judged-fastest entry.<br>
+</p>
+
+<ul>
+
+  <li class="style2"><font face="Arial"><b>Project Submission</b>.&nbsp;
+    </font><font size="3">Submitting homework or program assignment <span style="color: red;">(<span style="font-weight: bold;">HP</span>)</span>:
+create a pdf/zip file &lt;yourname&gt;.pdf/zip , and run on a linux box:<br>
+    </font></li>
+</ul>
+
+<div style="margin-left: 40px;">
+<div style="margin-left: 40px;"><font size="3"><strong><span class="" style="font-family: 'Courier New';">&gt; turnin -- submit bansal cs386_<span style="color: red; font-weight: bold;">HP</span>&nbsp;&lt;yourname&gt;.pdf/zip</span></strong></font><br>
+</div>
+<font size="3"><strong><span class="" style="font-family: 'Courier New';"></span></strong></font></div>
+
+<p style="margin-left: 40px;" class="style2" align="left"><font size="3"><strong><span class="" style="font-family: 'Courier New';"></span></strong>where&nbsp;<span class="" style="font-family: 'Courier New'; color: red; font-weight: bold;">HP</span><span style="color: red; font-weight: bold;">&nbsp;</span>is a
+designator&nbsp;<span class="" style="font-family: 'Courier New',Courier,monospace;"><strong>H1,H2</strong></span>,
+... for homeworks and&nbsp;<span class="" style="font-family: 'Courier New',Courier,monospace;"><strong>P1,P2</strong></span>...
+for programs.</font></p>
+
+<ul>
+
+  <li class="style2"><span style="font-weight: bold;">Verify Submission</span>.
+To check if the submission was successful, use:<font size="3"><strong><span class="" style="font-family: 'Courier New';"><br>
+    </span></strong></font></li>
+</ul>
+
+<p style="margin-left: 80px;" class="style2" align="left"><font size="3"><strong><span class="" style="font-family: 'Courier New';">&gt; turnin -- list
+bansal cs3<strong style="font-family: Arial;"><span class="" style="font-family: 'Courier New';">86</span></strong>_<span style="color: red;">HP</span></span></strong></font>
+<br>
+</p>
+
+<ul>
+
+  <li class="style2"><span style="font-weight: bold;">Retrieve
+Submission.</span> To download your submission, use:<font size="3"><font size="3"><strong><span class="" style="font-family: 'Courier New';"><br>
+    </span></strong></font></font></li>
+</ul>
+
+<p style="margin-left: 80px;" class="style2" align="left"><font size="3"><font size="3"><strong><span class="" style="font-family: 'Courier New';">&gt;
+turnin -- verify bansal cs3<strong style="font-family: Arial;"><span class="" style="font-family: 'Courier New';">86</span></strong>_<span style="color: red;">HP</span></span></strong></font></font></p>
+
+<p>
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h2><font face="Arial">Evaluation</font></h2>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</p>
+
+<p><font face="Arial">Final grades will be determined approximately by
+the following scheme:</font></p>
+
+<ol>
+
+  <li><font face="Arial">Your accumulative project grade will determine
+the <span style="text-decoration: underline;">maximum</span> final
+grade for the course.&nbsp; Ex: if you get a "B"
+average across all of your projects, your final grade will be no
+greater than a "B".</font></li>
+  <li><font face="Arial">Final counts 40%; midterm counts 35%;
+classroom participation 10%; and class presentation counts 15%.<br>
+    </font></li>
+</ol>
+
+<ul>
+
+</ul>
+
+<p><font face="Arial"><span style="background-color: white;">Homework </span>grades
+and class participation is used to decide borderline cases for final
+grades. </font></p>
+
+<table bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+  <tbody>
+    <tr>
+      <td width="100%">
+      <h3><font face="Arial">Extenuating Circumstances</font></h3>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><font face="Arial">If you have difficulty meeting the requirements
+of this course, fail to hand in an assignment, or miss an exam because
+of extenuating circumstances, please advise the instructor in writing (<b><font color="#ff0000">not email</font></b>) at the earliest possible date so
+that your situation can be discussed. If you encounter an unexpected
+medical or family emergency or a random act of Nature that causes you
+to miss the due date for homework or miss a quiz or exam, you must
+present suitable documentation in writing (<b><font color="#ff0000">not
+email</font></b>) to the instructor before special consideration will
+be given. A file of all written correspondence will be kept by the
+instructor and decisions regarding them will be made at the end of the
+semester.</font></p>
+
+<table style="width: 1167px; height: 42px;" bgcolor="#00ff00" border="0" cellpadding="0" cellspacing="0">
+
+  <tbody>
+    <tr>
+      <td width="100%">
+      
+      <h3><a name="Course_Outline"></a><font face="Arial">Course Outline</font></h3>
+
+
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><font style="color: rgb(0, 0, 0); font-family: Arial; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;" face="Arial">Numbers
+in [brackets] indicates the estimated number of lectures on a topic.
+The number indicated is a lower-bound, as there will be class room
+discussions to work on problems and review of homework assignments</font><font style="color: rgb(0, 0, 0); font-family: Arial; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;" face="Arial" size="3">. Papers that are listed below are required
+readings and are accessible via a web link.</font></p>
+
+
+
+
+
+<p><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"></span></span></p>
+
+<div style="text-align: center;">
+<span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-family: Arial;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;" class="Apple-style-span"> </span></span></span></div>
+
+<p><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+<table style="width: 1084px; text-align: left; margin-left: auto; margin-right: auto;" class="style16" border="2">
+  <tbody>
+    <tr>
+      <td style="height: 11px; width: 521px; font-family: Arial; background-color: rgb(51, 255, 51); text-align: center;" class="style15"> <strong>Topic [# of lectures + days of discussion]</strong><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+
+</span></span>
+      <span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+
+</span></span></span></span><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+
+</span></span>
+</td>
+      <td class="style15" style="height: 11px; color: black; width: 213px; font-family: Arial; background-color: rgb(51, 255, 51); text-align: center;">
+      <strong>Assignment</strong></td>
+    </tr>
+    <tr>
+      <td style="width: 521px; font-family: Arial;" class="style31 style2"> <span style="font-weight: bold;">Query
+Processing [6]<br>
+      </span>
+      <ul>
+        <li><a href="Lectures/1Qopt.pdf"><span style="font-weight: bold;">basic concepts in
+centralized and distributed query optimization [3]</span></a></li>
+        <ul>
+          <li><a href="Readings/QueryProcessing/Overview.pdf">Chaudhuri,
+"An Overview of Query Optimization in Relational Systems"</a></li>
+          <li><a href="Readings/QueryProcessing/SystemR.pdf">Selinger,
+et al., "Access Path Selection in a Relational Database Management
+System"</a></li>
+          <li><a href="Readings/QueryProcessing/R-Star.PDF">Mackert and
+Lohman, "R* Optimizer Validation and Performance Evaluation for
+Distributed Queries"</a><br>
+            <br>
+          </li>
+        </ul>
+        <li><span style="font-weight: bold;">query processing and
+optimization in database machines [2]</span></li>
+        <ul>
+          <li><a href="Readings/QueryProcessing/AlphaSort.pdf">Nyberg,
+Barclay, Cvetanovic, Gray, and Lomet, "AlphaSort: A Cache-Sensitive
+Parallel External Sort"</a></li>
+          <li><a href="Readings/QueryProcessing/Gamma.pdf">DeWitt, et.
+al., "The Gamma Database Machine Project"<br>
+            </a> <br>
+          </li>
+        </ul>
+        <li><span style="font-weight: bold;">object-oriented query
+optimization [1]</span></li>
+        <ul>
+          <li><a href="Readings/QueryProcessing/PredicateMigration.pdf">Hellerstein,
+"Predicate Migration: Optimizing Queries with Expensive Predicates"</a></li>
+        </ul>
+      </ul>
+      <font face="Arial"><span style="background-color: rgb(255, 255, 0);"><span class="style3" style="background-color: rgb(255, 255, 255);"></span></span></font>
+      <ul>
+        <ul>
+        </ul>
+      </ul>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center;" class="style39"><a href="https://www.surveymonkey.com/s/W7W9BF9">Complete
+Course Survey<br>
+Due Fri Jan 17th 10pm</a><br>
+      <br>
+      <a href="Projects/Project1.html">P1: SQL Refresher<br>
+Due Wed, Jan 22, 12noon</a><br>
+      <br>
+      <a href="Homework/psn1-soln.pdf">H1: Query Optimization #1<br>
+Due Thurs, Jan 23, 12noon</a><br>
+      <br>
+      <span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><a href="Homework/psn2.pdf">H2: Query Optimization #2<br>
+Due Wed, Jan 29, 12noon</a><br>
+      <br>
+      <a href="Projects/Projects2-4.html#Project2">P2: MDB </a></span></span></span></span></span><a href="Projects/Projects2-4.html#Project2"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"></span></span></span></span></span></a><a href="Projects/Projects2-4.html#Project2">Data Definition Language and
+Database Loading</a><a href="Projects/Projects2-4.html#Project2"><br>
+      </a><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><a href="Projects/Projects2-4.html#Project2">Due Wed, Feb 5, 12noon</a><br>
+      </span></span></span></span></span></td>
+    </tr>
+    <tr>
+      <td class="style32" style="width: 521px; font-family: Arial; height: 277px;"><span style="font-weight: bold;">Data Strorage, Data Warehouses, Database
+Optimization [3+1]<br>
+      </span>
+      <ul>
+        <li><span style="font-weight: bold;">spatial file structures
+and join algorithms [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/DataStorage/RTrees.pdf">Guttman,
+"R-Trees: A Dynamic Index Structure for Spatial Searching"</a></li>
+          <li><a href="Readings/DataStorage/IncrementalDistance.pdf">Hjaltason
+and Samet, "Incremental Distance Join Algorithms for Spatial Databases"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">data warehouses and data
+cubes [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/DataStorage/DataCube.pdf">Gray, et al.,
+"Data Cube: A Relational Aggregation Operator Generalizing Group-by,
+Cross-Tab, and Sub-Totals"</a></li>
+        </ul>
+        <ul>
+          <li><a href="Readings/DataStorage/SimultOpt.pdf">Zhao, et
+al., "Simultaneous Optimization and Evaluation of Multiple Dimensional
+Queries"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">Gray video, "The
+Revolution in Database Architecture" [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/DataStorage/Revolution.pdf">Gray, "The
+Revolution in Database Architecture"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">(optional) automatic
+database tuning [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/DataStorage/DB2DesignAdvisor.pdf">Zilio,
+et al. "DB2 Design Advisor: Integrated Automatic Physical Database
+Design"</a></li>
+        </ul>
+      </ul>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center; height: 277px;" class="style39"> <span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+      <span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">H3:
+R-Trees, Cubes and Group Assignments<br>
+Due TBD<br>
+      <br>
+      <a href="Projects/Projects2-4.html#Project3">P3: MDB </a></span></span></span><a href="Projects/Projects2-4.html#Project3"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"></span></span></a><a href="Projects/Projects2-4.html#Project3">Data Manipulation Language
+and Query Processing</a><a href="Projects/Projects2-4.html#Project3"><br>
+      </a><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><a href="Projects/Projects2-4.html#Project3">Due Wed, Feb 26, 12noon</a><br>
+      <br>
+Collect into Groups for Presentation and Select Presentation Topic<br>
+      </span></span></span></td>
+    </tr>
+    <tr>
+      <td class="style37" style="width: 521px; font-family: Arial; height: 30px;">
+      <p><strong>Midterm</strong>&nbsp;<strong>
+[1]&nbsp;</strong></p>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center; height: 30px;" class="style39">
+      <h3><a href="http://piazza.com/utexas/spring2014/cs386d?token=p3Lh3IZbRwp"><img src="Course/piazza.jpg" alt="" style="border: 0px solid ; width: 71px; height: 24px;" align="middle"></a></h3>
+
+      </td>
+    </tr>
+    <tr>
+      <td class="style16" style="width: 521px; font-family: Arial;"><span style="font-weight: bold;">Concurrency Control [7]<br>
+      </span>
+      <ul>
+        <li><span style="font-weight: bold;">basic concepts of
+concurrency control and recovery [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/Bernstein.zip">Bernstein chapter on
+"Serializability Theory"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">two-phase locking,
+phantoms, and multigranularity locking [2]</span></li>
+        <ul>
+          <li><a href="Readings/ConcurrencyControl/Interaction-of-QO-CC.pdf">Mohan,
+"Interactions Between Query Optimization and Concurrency Control"</a></li>
+        </ul>
+        <ul>
+          <li><a href="Readings/Bernstein.zip">Bernstein chapter on
+"Two Phase Locking"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">degrees of consistency [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/ConcurrencyControl/GranularityOfLocks.pdf">Gray, et al.
+"Granularity of Locks and Degrees of Consistency in a Shared Data Base"</a></li>
+          <li><a href="Readings/ConcurrencyControl/DegreesOfConsistency.pdf">Batory,
+"Degrees of Consistency Notes"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">B+ tree locking protocols
+[1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/ConcurrencyControl/Lehman-Yao.pdf">Lehman
+and Yao, "Efficient Locking for Concurrent Operations on B-Trees"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">key range locking and
+distributed concurrency control [1]<br>
+          </span></li>
+        <ul>
+          <li><a href="Readings/ConcurrencyControl/Aries-KVL.PDF">Mohan,
+"ARIES/KVL: A Key-Value Locking Method for Concurrency Control of
+Multiaction Transactions Operating on B-Tree Indices"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">non-locking protocols [1]</span></li>
+        <ul>
+          <li><a href="Readings/ConcurrencyControl/Optimistic.pdf">H.T.
+Kung and J.T. Robinson, "On Optimistic Methods for Concurrency Control"</a></li>
+        </ul>
+      </ul>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center;" class="style39"> <a href="../../SACourse/CS373S/P/P6/index.html"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"></span></span></span></a><a href="Homework/psn4.pdf">H4: CC &amp; R Basics<br>
+Due TBD</a><br>
+      <br>
+      <a href="Homework/psn5.pdf">H5: Multi Granularity Locking<br>
+Due TBD</a><br>
+      <br>
+      <a href="Homework/psn6.pdf">H6: Pulling It All Together<br>
+Due TBD</a><br>
+      <br>
+      <a href="Projects/Projects2-4.html#Project4">P4: MDB Query
+Optimization<br>
+Due Wed, March 26, 12noon</a><a href="Projects/Projects2-4.html#Project4"><span style="color: rgb(0, 0, 153);"></span></a><br>
+      </td>
+    </tr>
+    <tr>
+      <td class="style17" style="width: 521px; font-family: Arial;"><span style="font-weight: bold;">Recovery [3+1]</span><br style="font-weight: bold;">
+      <ul>
+        <li><span style="font-weight: bold;">basic concepts and
+operation logging [2]</span></li>
+        <ul>
+          <li><a href="Readings/Recovery/Principles-of-Recovery.pdf">Haerder
+and Reuter, "Principles of Transaction-Oriented Database Recovery"</a></li>
+        </ul>
+        <ul>
+          <li><a href="Readings/Recovery/Aries-Recovery.pdf">Mohan, et
+al., "ARIES: A Transaction Recovery Method
+Supporting Fine-Granularity Locking and Partial Rollbacks Using
+Write-Ahead Logging"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">recovery in distributed
+databases [1]</span></li>
+        <ul>
+          <li><a href="Readings/Recovery/TMinRStar.pdf">Mohan, Lindsay,
+and Obermarck, "Transaction Management in the R* Distributed Database
+Management System"</a></li>
+        </ul>
+        <li><span style="font-weight: bold;">(optional) enterprise java
+beans [1]<br>
+          </span></li>
+      </ul>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center;" class="style39"><br>
+      </td>
+    </tr>
+    <tr>
+      <td class="style17" style="width: 521px; font-family: Arial;"><span style="font-weight: bold;">Current Trends in Database Research [6]<br>
+      </span><br>
+      </td>
+      <td style="width: 213px; font-family: Arial; text-align: center;" class="style39"> <a href="http://www.youtube.com/watch?v=y3CtaMFMxjc">
+      </a><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="Apple-style-span" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><span class="style38" style="border-collapse: separate; color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"></span></span></span></span></span></span></span>Group
+Presentations<br>
+      </td>
+    </tr>
+    <tr>
+      <td class="style17" style="width: 521px; font-family: Arial;">
+      <p class="style38"><strong>Course Recap [1]</strong></p>
+      </td>
+      <td style="width: 213px; font-family: Arial;" class="style37">&nbsp;</td>
+    </tr>
+  </tbody>
+</table>
+</span></span><font style="color: rgb(0, 0, 0); font-family: Arial; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;" face="Arial" size="3">&nbsp;</font><font style="color: rgb(0, 0, 0); font-family: Arial; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;" face="Arial" size="3"><strong></strong></font><font style="color: rgb(0, 0, 0); font-family: Arial; font-size: medium; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px;" face="Arial" size="3"><span class="Apple-converted-space"><br>
+</span></font></p>
+
+</body></html>

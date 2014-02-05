@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="docs/doclet"/>
+	<classpathentry excluding="android/JECursorAdapter/src/|android/JECursorAdapter/gen/" kind="src" path="examples"/>
+	<classpathentry kind="src" path="examples/android/JECursorAdapter/gen"/>
+	<classpathentry kind="src" path="examples/android/JECursorAdapter/src"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="standalone/" kind="src" path="test"/>
+	<classpathentry kind="src" path="test/standalone"/>
+	<classpathentry kind="lib" path="docs/HidingDoclet.jar"/>
+	<classpathentry kind="lib" path="lib/je-5.0.103.jar"/>
+	<classpathentry kind="lib" path="lib/je-android-5.0.103.jar"/>
+	<classpathentry kind="lib" path="lib/JEJConsole.jar"/>
+	<classpathentry kind="lib" path="lib/RepJEJConsole.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 1.6.0-b105 (Sun Microsystems Inc.)
+Build-Timestamp: 2007-09-21 08:49:03
+Build-Username: dsb
+Copyright-Notice: (C) 2007 The University of Texas at Austin
+Main-Class: mdb.Main
+Class-Path: file:jakarta.jar
+
