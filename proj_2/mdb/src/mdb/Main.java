@@ -1,28 +1,12 @@
 package mdb;
 
-import Jakarta.util.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URI;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Stack;
-import java.util.EmptyStackException;
-import java.util.Vector;
+import Jakarta.util.FixDosOutputStream;
+import Jakarta.util.Util;
+
 import java.io.*;
-import java.util.*;
+import java.net.URI;
+import java.util.List;
+import java.util.Vector;
 
 //**************************************************
 // Executing the main of Main will perform the following:
@@ -308,16 +292,16 @@ public class Main {
             *          ((SqlLang) root).execute();               *
             *****************************************************/
 
-            ( ( SqlLang ) root ).print();
-            System.out.println();
+//            ( ( SqlLang ) root ).print();
+//            System.out.println();
             ( ( SqlLang ) root ).execute();
             pw.flush();
 
             // Step 5.5: now dump the parse tree
             //           this code can be removed for production systems
 
-            System.out.println( "Dump root" );
-            root.PrettyDump();
+//            System.out.println( "Dump root" );
+//            root.PrettyDump();
 
         }
         while ( true ); // end Language statement loop
