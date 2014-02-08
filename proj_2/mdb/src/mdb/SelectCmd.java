@@ -5,11 +5,13 @@ package mdb;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentNotFoundException;
 import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class SelectCmd extends Select {
 
@@ -20,8 +22,22 @@ public class SelectCmd extends Select {
         
         super.execute();
 
+        System.out.println(getContentsOfSelectedTables());
+    }
+
+    private String getContentsofSingleTable(Database relationDB, AstCursor c, DatabaseEntry relationMetaData) throws UnsupportedEncodingException {
+        String relationName = c.node.toString().trim();
+        if(relationName.equals("ALL"))
+            return(getContentsOfAllTables());
+        if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
+            return("\nRelation not present : " + relationName);
+        return ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
+    }
+
+    private String getContentsOfSelectedTables() {
         MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
+        StringBuffer contents = new StringBuffer();
 
         try {
             myDbEnv.setup(ExecuteHelpers.myDbEnvPath, true);
@@ -29,23 +45,31 @@ public class SelectCmd extends Select {
             DatabaseEntry relationMetaData = new DatabaseEntry();
             AstCursor c = new AstCursor();
             for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {
-                String relationName = c.node.toString().trim();
-                if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData)) {
-                    System.err.println("Relation not present : " + relationName);
-                    return;
-                }
-                System.out.println(ExecuteHelpers.getShowData(new String(relationMetaData.getData(), "UTF-8")));
-                System.out.println();
+                contents.append(getContentsofSingleTable(relationDB, c, relationMetaData));
+                contents.append("\n-----------------------\n");
             }
         } catch(EnvironmentNotFoundException e) {
             System.err.println("Database is currently empty!!.");
-            return;
+            return "";
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
             if(relationDB != null) relationDB.close();
             myDbEnv.close();
         }
+        return contents.toString();
+    }
+
+    private static String getContentsOfAllTables()
+            throws DatabaseException {
+        ArrayList<String> relations = ExecuteHelpers.getAllRowsOfTable("relationDB");
+        StringBuffer displayString = new StringBuffer();
+        for(int i = 0; i < relations.size(); i++) {
+            String relationName = relations.get(i);
+            displayString.append(ExecuteHelpers.getSelectData(relationName));
+            displayString.append("\n");
+        }
+        return displayString.toString();
     }
 
     public AstToken getFROM () {

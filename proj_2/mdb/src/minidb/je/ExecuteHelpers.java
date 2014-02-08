@@ -32,10 +32,10 @@ public class ExecuteHelpers {
         return tempData.getSize() != 0;
     }
 
-    public static String getShowData(String relationName) {
-        String[] columnTypes = new String[relationName.split(",").length];
+    public static String getSelectData(String relationData) {
+        String[] columnTypes = new String[relationData.split(",").length];
         StringBuffer displayString = new StringBuffer();
-        String[] columnData = relationName.split(",");
+        String[] columnData = relationData.split(",");
         displayString.append(columnData[0]+ " (");
         for(int j = 1; j < columnData.length; j++) {
             columnTypes[j-1] = columnData[j].split(":")[1];
@@ -55,7 +55,8 @@ public class ExecuteHelpers {
 
     public static ArrayList<String> getAllRowsOfTable(String relation)
             throws DatabaseException {
-           return getAllRowsOfTable(relation, new String[0]);
+        //Second param of getAllRowsOfTable is not yet implemented
+        return getAllRowsOfTable(relation, new String[0]);
     }
 
     public static ArrayList<String> getAllRowsOfTable(String relation, String[] columnTypes)
