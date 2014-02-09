@@ -13,6 +13,8 @@ import minidb.je.MyDbEnv;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import static minidb.je.ExecuteHelpers.READ_ONLY;
+
 public class SelectCmd extends Select {
 
     final public static int ARG_LENGTH = 3 ;
@@ -40,8 +42,8 @@ public class SelectCmd extends Select {
         StringBuffer contents = new StringBuffer();
 
         try {
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, true);
-            relationDB = myDbEnv.getDB("relationDB", true);
+            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
+            relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
             DatabaseEntry relationMetaData = new DatabaseEntry();
             AstCursor c = new AstCursor();
             for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {

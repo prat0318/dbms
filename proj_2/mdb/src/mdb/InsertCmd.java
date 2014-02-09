@@ -10,6 +10,8 @@ import minidb.je.MyDbEnv;
 
 import java.io.UnsupportedEncodingException;
 
+import static minidb.je.ExecuteHelpers.READ_WRITE;
+
 public class InsertCmd extends Insert {
 
     final public static int ARG_LENGTH = 2 ;
@@ -21,8 +23,8 @@ public class InsertCmd extends Insert {
         String relName = getRel_name().toString().trim();
 
         MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, false);
-        Database relationDB = myDbEnv.getDB("relationDB", false);
+        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+        Database relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
 
         if(!ExecuteHelpers.isTablePresent(relationDB, relName)) {
             System.out.println(relName + " is not created. Please first create it! :|");
@@ -45,7 +47,7 @@ public class InsertCmd extends Insert {
             DatabaseEntry theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + dataString.toString()).getBytes("UTF-8"));
             DatabaseEntry theData = new DatabaseEntry(dataString.toString().getBytes("UTF-8"));
 
-            insertDB = myDbEnv.getDB(relName + "DB", false);
+            insertDB = myDbEnv.getDB(relName + "DB", READ_WRITE);
             insertDB.put(null, theKey, theData);
 
         } catch (UnsupportedEncodingException e) {

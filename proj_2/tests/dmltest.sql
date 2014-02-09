@@ -57,6 +57,8 @@ update emp set age = 26 where name = "Anderson, John" ;
 
 delete emp where name = "Anderson, John" ;
 .
+select * from ALL;
+.
 
 close;
 .

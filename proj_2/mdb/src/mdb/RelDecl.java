@@ -9,6 +9,8 @@ import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 import minidb.models.Relation;
 
+import static minidb.je.ExecuteHelpers.READ_WRITE;
+
 public class RelDecl extends Decl_rel {
 
     final public static int ARG_LENGTH = 2;
@@ -44,11 +46,11 @@ public class RelDecl extends Decl_rel {
 
         try {
             myDbEnv = new MyDbEnv();
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, false);
+            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
 //            theRelKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + "").getBytes("UTF-8"));
             theRelKey = new DatabaseEntry((relName).getBytes("UTF-8"));
             theRelData = new DatabaseEntry(r.data().getBytes("UTF-8"));
-            relationDB = myDbEnv.getDB("relationDB", false);
+            relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
 
             if(ExecuteHelpers.isTablePresent(relationDB, relName)) {
                 System.out.println(relName + " is already created. Try something else");

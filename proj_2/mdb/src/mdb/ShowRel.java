@@ -10,6 +10,8 @@ import minidb.je.MyDbEnv;
 
 import java.io.UnsupportedEncodingException;
 
+import static minidb.je.ExecuteHelpers.READ_ONLY;
+
 public class ShowRel extends Show {
 
     final public static int ARG_LENGTH = 1 ;
@@ -24,11 +26,10 @@ public class ShowRel extends Show {
 
     private String showDescOfRelation(String relationName) {
         MyDbEnv myDbEnv = new MyDbEnv();
-        Database relationDB = null;
-        StringBuffer contents = new StringBuffer();
+        Database relationDB;
 
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, true);
-        relationDB = myDbEnv.getDB("relationDB", true);
+        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
+        relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
 
         DatabaseEntry dataEntry = new DatabaseEntry();
         boolean isRelPresent = ExecuteHelpers.isTablePresent(relationDB, relationName, dataEntry);

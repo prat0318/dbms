@@ -1,0 +1,6 @@
+#!/bin/sh
+rm -rf mdb/src/JEDB/*
+cd mdb/src
+javac -cp ../jakarta.jar:../je-5.0.103.jar mdb/*.java minidb/models/*.java minidb/je/*.java
+java -cp ../jakarta.jar:../je-5.0.103.jar:. mdb.Main -f ../../tests/ddltest.sql
+java -cp ../jakarta.jar:../je-5.0.103.jar:. mdb.Main -f ../../tests/dmltest.sql

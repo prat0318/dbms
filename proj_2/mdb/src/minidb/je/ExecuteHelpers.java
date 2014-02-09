@@ -7,13 +7,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class ExecuteHelpers {
+    public static final boolean READ_ONLY = false;        //Temporarily made it false, insert was failing.
+    public static final boolean READ_WRITE = false;
 
-    public static File myDbEnvPath = new File("/tmp/JEDB");
-
-
-//    private static String parseName(String data, int position) {
-//        return data.split(",")[position].trim();
-//    }
+    public static File myDbEnvPath = new File("JEDB");
 
     public static boolean isTablePresent(Database relationDB, String relationName) {
         return isTablePresent(relationDB, relationName, new DatabaseEntry());
@@ -63,10 +60,10 @@ public class ExecuteHelpers {
             throws DatabaseException {
         ArrayList<String> tuples = new ArrayList<String>();
         MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(myDbEnvPath, true);
+        myDbEnv.setup(myDbEnvPath, READ_ONLY);
 
         // Get a cursor
-        Database database = myDbEnv.getDB(relation, true);
+        Database database = myDbEnv.getDB(relation, READ_ONLY);
         Cursor cursor = database.openCursor(null, null);
 
         // DatabaseEntry objects used for reading records
@@ -80,8 +77,6 @@ public class ExecuteHelpers {
                 String data =  new String(foundData.getData(), "UTF-8").replaceAll("&&",",");
 
                 tuples.add(data);
-//                System.out.println("Key : " + key + " Data : " + data);
-//                if(!"".equals(name) && parseName(data, position).equals(name.trim())) return true;
             }
         } catch (Exception e) {
             System.err.println("Error on relation cursor:");
