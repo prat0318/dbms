@@ -1,6 +1,9 @@
 // SQL-MDL ddl test file
 // should parse with no errors
 
+open "don/mdb.database";
+.
+
 create table emp ( empno int,
               age   int,
               dept_name str,
@@ -37,6 +40,8 @@ show;
 script "insert_mydatabase_tuples";
 .
 commit;
+.
+close;
 .
 exit;
 .
