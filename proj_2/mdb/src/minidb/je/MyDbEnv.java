@@ -58,7 +58,7 @@ public class MyDbEnv {
         mySecConfig.setTransactional(!readOnly);
 
         // Open the environment
-            myEnv = new Environment(envHome, myEnvConfig);
+        myEnv = new Environment(envHome, myEnvConfig);
 
 
         // Now open, or create and open, our databases
