@@ -11,7 +11,7 @@ import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.util.*;
 
 import static minidb.je.ExecuteHelpers.READ_ONLY;
 
@@ -27,29 +27,76 @@ public class SelectCmd extends Select {
         System.out.println(getContentsOfSelectedTables());
     }
 
-    private String getContentsofSingleTable(Database relationDB, AstCursor c, DatabaseEntry relationMetaData) throws UnsupportedEncodingException {
-        String relationName = c.node.toString().trim();
-        if(relationName.equals("ALL"))
-            return(getContentsOfAllTables());
-        if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
-            return("\nRelation not present : " + relationName);
+    private List<String> getContentsofSingleTable(Database relationDB, AstCursor c, DatabaseEntry relationMetaData) throws UnsupportedEncodingException {
+
         return ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
     }
 
     private String getContentsOfSelectedTables() {
         MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
-        StringBuffer contents = new StringBuffer();
+        String contents = null;
 
         try {
             myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
             relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
             DatabaseEntry relationMetaData = new DatabaseEntry();
             AstCursor c = new AstCursor();
+            Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
+            Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
+            Map<String, List<String[]>> allRowsOfRelations = new HashMap<String, List<String[]>>();
+            List<String> fromRelations = new ArrayList<String>();
             for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {
-                contents.append(getContentsofSingleTable(relationDB, c, relationMetaData));
-                contents.append("\n-----------------------\n");
+                String relationName = c.node.toString().trim();
+                if(relationName.equals("ALL"))
+                    return(getContentsOfAllTables());
+                if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
+                    return("\nRelation not present : " + relationName);
+                fromRelations.add(relationName);
+                List<String> data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
+                String[] meta = (data.remove(0)).split(",", 2);
+                // relationName -> ["relationName.col1", "relationName.col2" ...]
+                String[] columnNameAndType = meta[1].split(",");
+                String columnNames[] = new String[columnNameAndType.length];
+                String columnTypes[] = new String[columnNameAndType.length];
+                for(int i = 0; i < columnNameAndType.length; i++) {
+                    columnNames[i] = meta[0] + "." + columnNameAndType[i].split(":")[0];
+                    columnTypes[i] = columnNameAndType[i].split(":")[1];
+                }
+                metaColumnRelation.put(meta[0], columnNames);
+                metaColumnTypeRelation.put(meta[0], columnTypes);
+                List<String[]> rows = new ArrayList<String[]>();
+                for(String s: data) rows.add(s.split(","));
+                // relationName -> [["val1","val2"], ["val1","val2"]...]
+                allRowsOfRelations.put(meta[0], rows);
             }
+
+            String[] projections = getProj_list().toString().split(",");
+            List<String> projWithRelationName = new ArrayList<String>();
+            for(String p : projections) {
+                p = p.trim();
+                if(p.contains(".")) {
+                        projWithRelationName.add(p);
+                } else if(p.contains("*")) {
+                    for(String relName: metaColumnRelation.keySet())
+                        for(String cols: metaColumnRelation.get(relName))
+                            projWithRelationName.add(cols);
+                } else {
+                    if(fromRelations.size() > 1)
+                        return(p+" is not linked with any relation in projection. Prefix table with '.'");
+                    projWithRelationName.add(fromRelations.get(0)+"."+p);
+                }
+            }
+
+            applyLocalPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, fromRelations);
+
+            applyJoinPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, fromRelations);
+
+            applyCrossProducts(allRowsOfRelations, metaColumnRelation);
+
+            contents = buildString(allRowsOfRelations.values().iterator().next(),
+                                    metaColumnRelation.values().iterator().next(),
+                                    projWithRelationName);
         } catch(EnvironmentNotFoundException e) {
             System.err.println("Database is currently empty!!.");
             return "";
@@ -59,17 +106,253 @@ public class SelectCmd extends Select {
             if(relationDB != null) relationDB.close();
             myDbEnv.close();
         }
+        return contents;
+    }
+
+    private void applyCrossProducts(Map<String, List<String[]>> allRowsOfRelations, Map<String, String[]> metaColumnRelation) {
+        List<List<String[]>> rows = new ArrayList<List<String[]>>();
+        List<String[]> meta = new ArrayList<String[]>();
+
+        for(String relation: allRowsOfRelations.keySet()) {
+            if(!rows.contains(allRowsOfRelations.get(relation))) {
+                rows.add(allRowsOfRelations.get(relation));
+                meta.add(metaColumnRelation.get(relation));
+            }
+        }
+
+        allRowsOfRelations.clear();
+        metaColumnRelation.clear();
+
+        while(rows.size() != 1) {
+            List<String[]> r1 = rows.remove(0); String[] m1 = meta.remove(0);
+            List<String[]> r2 = rows.remove(0); String[] m2 = meta.remove(0);
+
+            String[] m3 = new String[m1.length + m2.length];
+            List<String[]> r3 = new ArrayList<String[]>();
+            System.arraycopy(m1, 0, m3, 0, m1.length);
+            System.arraycopy(m2, 0, m3, m1.length, m2.length);
+
+            meta.add(m3);
+            for(String[] s1: r1) {
+                for(String[] s2: r2) {
+                    String[] s3 = new String[s1.length + s2.length];
+                    System.arraycopy(s1, 0, s3, 0, s1.length);
+                    System.arraycopy(s2, 0, s3, s1.length, s2.length);
+                    r3.add(s3);
+                }
+            }
+            rows.add(r3);
+        }
+        allRowsOfRelations.put("joined", rows.get(0));
+        metaColumnRelation.put("joined", meta.get(0));
+    }
+
+    private void applyLocalPredicates(Map<String, List<String[]>> allRowsOfRelations,
+                                      Map<String, String[]> metaColumnRelation,
+                                      Map<String, String[]> metaColumnTypeRelation,
+                                      List<String> fromRelations) {
+        if(getWherePred() == null) return;
+        AstCursor c = new AstCursor();
+        Map<String, List<AstNode>> clauses = new HashMap<String, List<AstNode>>();
+        for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
+            AstNode node = c.node;
+            if(!(node instanceof JoinClause)) {
+                //local predicate
+                String relation = (node.arg[0] instanceof Rel_dot_field) ?
+                        node.arg[0].arg[0].toString().trim() : fromRelations.get(0).trim();
+                List<AstNode> clauseList = clauses.get(relation);
+                if(clauseList == null) clauseList = new ArrayList<AstNode>();
+                clauseList.add(node); clauses.put(relation, clauseList);
+            }
+        }
+        if(clauses.isEmpty()) return;
+        for(String relation: clauses.keySet()) {
+            int[] indices = new int[clauses.get(relation).size()];
+            for(int i = 0; i < indices.length; i++) {
+                indices[i] = -1;
+                String clauseName = clauses.get(relation).get(i).arg[0] instanceof Rel_dot_field ?
+                        clauses.get(relation).get(i).arg[0].toString().trim()
+                        : relation+"."+clauses.get(relation).get(i).arg[0].toString().trim();
+                for(int j = 0; j < metaColumnRelation.get(relation).length; j++) {
+                    if(clauseName.equals(metaColumnRelation.get(relation)[j])) {
+                        indices[i] = j; break;
+                    }
+                }
+            }
+            List<String[]> filteredRows = new ArrayList<String[]>();
+            for(String[] row: allRowsOfRelations.get(relation)) {
+                boolean keepRow = true;
+                for (int i = 0; i < indices.length; i++) {
+                    Rel operator = (Rel) clauses.get(relation).get(i).arg[1];
+                    String rhs1 = clauses.get(relation).get(i).arg[2].toString().trim();
+                    String col1 = row[indices[i]];
+                    if ("int".equals(metaColumnTypeRelation.get(relation)[indices[i]])) {
+                        int col = Integer.parseInt(col1);
+                        int rhs = Integer.parseInt(rhs1);
+                        if (
+                                (operator instanceof Equ && !(col == rhs)) ||
+                                        (operator instanceof Neq && !(col != rhs)) ||
+                                        (operator instanceof Geq && !(col >= rhs)) ||
+                                        (operator instanceof Leq && !(col <= rhs)) ||
+                                        (operator instanceof Lss && !(col < rhs)) ||
+                                        (operator instanceof Gtr && !(col > rhs)))
+                            keepRow = false;
+                    } else if (
+                            (operator instanceof Equ && !(col1.compareTo(rhs1) == 0)) ||
+                                    (operator instanceof Neq && !(col1.compareTo(rhs1) != 0)) ||
+                                    (operator instanceof Geq && !(col1.compareTo(rhs1) >= 0)) ||
+                                    (operator instanceof Leq && !(col1.compareTo(rhs1) <= 0)) ||
+                                    (operator instanceof Lss && !(col1.compareTo(rhs1) < 0)) ||
+                                    (operator instanceof Gtr && !(col1.compareTo(rhs1) > 0)))
+                        keepRow = false;
+                }
+                if(keepRow) filteredRows.add(row);
+            }
+            allRowsOfRelations.put(relation, filteredRows);
+        }
+    }
+
+    private String buildString(List<String[]> allRowsOfRelations,
+                               String[] metaColumnRelation,
+                               List<String> projWithRelationName) {
+        int[] indices = new int[projWithRelationName.size()];
+        StringBuffer contents = new StringBuffer();
+        for(int i = 0; i < projWithRelationName.size(); i++) {
+            indices[i] = -1;
+            for(int j = 0; j < metaColumnRelation.length; j++) {
+                if(projWithRelationName.get(i).equals(metaColumnRelation[j])) {
+                    indices[i] = j;
+                    break;
+                }
+            }
+            if(indices[i] != -1) contents.append(projWithRelationName.get(i)+"\t");
+        }
+        contents.append("\n------------------------\n");
+        for(String[] row: allRowsOfRelations) {
+            for(int j = 0; j < indices.length; j++) {
+                try {
+                    if(indices[j] != -1)contents.append(row[indices[j]]+"\t");
+                } catch(ArrayIndexOutOfBoundsException e) {
+                    contents.append("null\t");
+                }
+            }
+            contents.append("\n");
+        }
         return contents.toString();
     }
 
-    private static String getContentsOfAllTables()
+    private void applyJoinPredicates(Map<String, List<String[]>> allRowsOfRelations,
+                                     Map<String, String[]> metaColumnRelation,
+                                     Map<String, String[]> metaColumnTypeRelation,
+                                     List<String> fromRelations) {
+        if(getWherePred() == null) return;
+        class Join {
+            AstNode lhs; AstNode rhs;
+            Join(AstNode lhs, AstNode rhs) {
+                this.lhs = lhs;
+                this.rhs = rhs;
+            }
+        }
+        AstCursor c = new AstCursor();
+        Map<String, List<Join>> clauses = new HashMap<String, List<Join>>();
+        for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
+            AstNode node = c.node;
+            if(node instanceof JoinClause) {
+                //local predicate
+                if(clauses.get(node.arg[0].arg[0].toString().trim()) != null) {
+                    List<Join> join_clauses = clauses.get(node.arg[0].arg[0].toString().trim());
+                    join_clauses.add(new Join(node.arg[0], node.arg[1]));
+                    clauses.put(node.arg[0].arg[0].toString().trim(), join_clauses);
+                } else if(clauses.get(node.arg[1].arg[0].toString().trim()) != null) {
+                    List<Join> join_clauses = clauses.get(node.arg[1].arg[0].toString().trim());
+                    join_clauses.add(new Join(node.arg[1], node.arg[0]));
+                    clauses.put(node.arg[1].arg[0].toString().trim(), join_clauses);
+                } else {
+                    List<Join> join_clauses = new ArrayList<Join>();
+                    join_clauses.add(new Join(node.arg[0], node.arg[1]));
+                    clauses.put(node.arg[0].arg[0].toString().trim(), join_clauses);
+                }
+            }
+        }
+        if(clauses.isEmpty()) return;
+        List<String> centerNodes = new ArrayList<String>(clauses.keySet());
+        while(!centerNodes.isEmpty()) {
+            String centerNode = centerNodes.remove(0);
+            for(Join j: clauses.get(centerNode)) {
+                String[] center_columns = (metaColumnRelation.get(centerNode));
+                List centerTableColumns = Arrays.asList(center_columns);
+//                List centerTableColumnTypes = Arrays.asList(metaColumnTypeRelation.get(centerNode));
+                String centerTableColumnArrays[] = null;
+//                String centerTableColumnTypeArrays[] = null;
+                int index_left, index_right;
+                index_left = centerTableColumns.indexOf(j.lhs.toString());
+                String rhs_node = j.rhs.arg[0].toString();
+                index_right = Arrays.asList(metaColumnRelation.get(rhs_node)).indexOf(j.rhs.toString());
+                List<String[]> joinedTable = new ArrayList<String[]>();
+                boolean internal = false;
+                if (centerTableColumns.contains(j.rhs.toString())) {
+                    //relations are already joined ... just filter.
+                    centerTableColumnArrays = center_columns;
+                    internal = true;
+                } else {
+                    //create new list joining columns.
+                    centerTableColumnArrays = new String[center_columns.length + metaColumnRelation.get(rhs_node).length];
+                    System.arraycopy(center_columns, 0, centerTableColumnArrays, 0, center_columns.length);
+                    System.arraycopy(metaColumnRelation.get(rhs_node), 0, centerTableColumnArrays, center_columns.length, metaColumnRelation.get(rhs_node).length);
+//                    centerTableColumns.addAll(Arrays.asList(metaColumnRelation.get(rhs_node)));
+
+//                    centerTableColumnTypeArrays = new String[metaColumnTypeRelation.get(centerNode).length + metaColumnTypeRelation.get(rhs_node).length];
+//                    System.arraycopy(metaColumnTypeRelation.get(centerNode), 0, centerTableColumnTypeArrays, 0, metaColumnTypeRelation.get(centerNode).length);
+//                    System.arraycopy(metaColumnTypeRelation.get(rhs_node), 0, centerTableColumnTypeArrays, metaColumnTypeRelation.get(centerNode).length, metaColumnTypeRelation.get(rhs_node).length);
+//                    centerTableColumnTypes.addAll(Arrays.asList(metaColumnTypeRelation.get(rhs_node)));
+                }
+                for (String[] row : allRowsOfRelations.get(centerNode)) {
+                    String lhs_value = row[index_left];
+                    if(internal) {
+                        if(lhs_value.equals(row[index_right]))
+                            joinedTable.add(row);
+                        continue;
+                    }
+                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
+                        if(lhs_value.equals(row_rhs[index_right])) {
+                            String[] combine = new String[row.length + row_rhs.length];
+                            System.arraycopy(row, 0, combine, 0, row.length);
+                            System.arraycopy(row_rhs, 0, combine, row.length, row_rhs.length);
+                            joinedTable.add(combine);
+                        }
+                    }
+                }
+                for(String r: allRowsOfRelations.keySet())
+                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(centerNode))
+                        allRowsOfRelations.put(r, joinedTable);
+                for(String r: allRowsOfRelations.keySet())
+                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(rhs_node))
+                        allRowsOfRelations.put(r, joinedTable);
+                for(String r: metaColumnRelation.keySet())
+                    if(metaColumnRelation.get(r) == metaColumnRelation.get(centerNode))
+                        metaColumnRelation.put(r, centerTableColumnArrays);
+                for(String r: metaColumnRelation.keySet())
+                    if(metaColumnRelation.get(r) == metaColumnRelation.get(rhs_node))
+                        metaColumnRelation.put(r, centerTableColumnArrays);
+//                metaColumnTypeRelation.put(centerNode, centerTableColumnTypeArrays);
+//                metaColumnTypeRelation.put(rhs_node, centerTableColumnTypeArrays);
+            }
+        }
+    }
+
+    private String getContentsOfAllTables()
             throws DatabaseException {
         ArrayList<String> relations = ExecuteHelpers.getAllRowsOfTable("relationDB");
         StringBuffer displayString = new StringBuffer();
         for(int i = 0; i < relations.size(); i++) {
             String relationName = relations.get(i);
-            displayString.append(ExecuteHelpers.getSelectData(relationName));
-            displayString.append("\n");
+            //get rows from each relationName
+            List<String> rows = ExecuteHelpers.getSelectData(relationName);
+            String columns = rows.remove(0);
+            displayString.append(columns.replaceFirst(",","\n(").replace(",","\t")+")\n");
+            for(String s: rows)
+                displayString.append(s.replaceAll(",", "\t")+"\n");
+            displayString.append("\n-----------------------\n");
         }
         return displayString.toString();
     }

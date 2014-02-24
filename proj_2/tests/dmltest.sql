@@ -4,7 +4,23 @@
 open "don/mdb.database";
 .
 
-insert into emp values ( 54, "Don" );
+insert into emp values (1, 54, "CS", "Don" );
+.
+
+insert into dept values (2, "CS", "bruce");
+.
+insert into dept values (3, "EC", "bruce");
+.
+insert into dept values (4, "CS", "batman");
+.
+insert into dept values (5, "DEPT", "DEPT");
+.
+
+insert into univ values (1, "UT", 1, 3);
+.
+insert into univ values (2, "UTA", 2, 10);
+.
+insert into univ values (3, "UT", 3, 4);
 .
 
 delete emp where empno = 4;

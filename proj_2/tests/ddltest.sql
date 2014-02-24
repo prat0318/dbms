@@ -18,6 +18,12 @@ create table dept ( deptno int,
              );
 .
 
+create table univ( univno int,
+					univ_name str,
+					empno int,
+					deptno int);
+.					
+
 // create table some indices
 
 index emp.age;
