@@ -1,8 +1,8 @@
 // a simple test of the SQL MDB DML
 // 
 
-open "don/mdb.database";
-.
+//open "don/mdb.database";
+//.
 
 insert into emp values (1, 54, "CS", "Don" );
 .
@@ -68,7 +68,7 @@ insert into emp
        values (10100, 26, "Computer Science", "Anderson, John" );
 .
 
-update emp set age = 26 where name = "Anderson, John" ;
+update emp set age = 36 where name = "Anderson, John" ;
 .
 
 delete emp where name = "Anderson, John" ;
@@ -78,5 +78,5 @@ select * from ALL;
 
 close;
 .
-exit;
-.
+//exit;
+//.

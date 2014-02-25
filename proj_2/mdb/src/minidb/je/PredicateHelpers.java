@@ -46,7 +46,7 @@ public class PredicateHelpers {
         boolean keepRow = true;
         for (int i = 0; i < indices.length; i++) {
             Rel operator = (Rel) clauses.get(relation).get(i).arg[1];
-            String rhs1 = clauses.get(relation).get(i).arg[2].toString().trim();
+            String rhs1 = clauses.get(relation).get(i).arg[2].toString().trim().replaceAll(",", "&&");
             String col1 = row[indices[i]];
             if ("int".equals(metaColumnType[indices[i]])) {
                 int col = Integer.parseInt(col1);

@@ -229,9 +229,13 @@ public class Main {
  
         // Step 5: Get input and parse until an empty line is entered.
         //         An empty line is something with "." only.
+        boolean runningConsole = false; //to know that console needs to be switched back on.
+        boolean runningScript = false; //to know that script is being run.
 
-        if ( userInput == null )
+        if ( userInput == null ) {
             userInput = new BufferedReader( new InputStreamReader( System.in ) );
+            runningConsole = true;
+        }
         do {
             // LanguageName statement loop
             input = ""; // initialize input string
@@ -246,10 +250,22 @@ public class Main {
                 line = "";
                 try {
                     line = userInput.readLine();
+                    if(runningScript) System.out.println(line);
                 }
                 catch ( Exception e ) {
-                    System.exit( 10 );
+                    if (runningScript && runningConsole){
+                        runningScript = false;
+                        userInput = new BufferedReader( new InputStreamReader( System.in ) );
+                        line = "";
+                    }else { System.exit( 10 ); }
                 }
+
+                if(line == null && runningScript && runningConsole){
+                    runningScript = false;
+                    userInput = new BufferedReader( new InputStreamReader( System.in ) );
+                    line = "";
+                }
+
                 if ( line == null )
                     break;
                 if ( line.compareTo( "" ) == 0 )
@@ -292,6 +308,15 @@ public class Main {
             *          ((SqlLang) root).execute();               *
             *****************************************************/
 
+            if(( SqlLang ) root instanceof ScriptCmd){
+                String scriptName = ((AstToken) (((ScriptCmd) ((ScriptCmd)( SqlLang ) root)).tok[1])).name.trim();
+                runningScript = true;
+                try {
+                    userInput = new BufferedReader(new FileReader(scriptName.replace("\"","")));
+                } catch (FileNotFoundException e) {
+                    System.out.println("Filename " + scriptName + " not found at " +   new File(scriptName).getAbsolutePath());
+                }
+            }
 //            ( ( SqlLang ) root ).print();
 //            System.out.println();
             ( ( SqlLang ) root ).execute();

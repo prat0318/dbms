@@ -3,8 +3,6 @@
 
 package mdb;
 
-import java.io.*;
-
 public class ScriptCmd extends Script {
 
     final public static int ARG_LENGTH = 1 /* Kludge! */ ;
@@ -13,18 +11,18 @@ public class ScriptCmd extends Script {
     public void execute () {
         
         super.execute();
-        BufferedReader       userInput = null;
+//        BufferedReader       userInput = null;
 
-        try {
+//        try {
 //            userInput =  new BufferedReader( new FileReader(  ) );
-            System.setIn(new FileInputStream(getSTRING_LITERAL().tokenName().replaceAll("^\"|\"$", "")));
+//            System.setIn(new FileInputStream(getSTRING_LITERAL().tokenName().replaceAll("^\"|\"$", "")));
 
 //            InputStream stream = new ByteArrayInputStream("hellloooo;\n.\n".getBytes("UTF-8"));
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        System.out.println(userInput);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(userInput);
     }
 
     public AstToken getSCRIPT () {
