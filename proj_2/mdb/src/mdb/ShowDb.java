@@ -43,7 +43,7 @@ public class ShowDb extends Show {
     }
 
     private String showDescOfAllRelations() {
-        ArrayList<String> relationDBcontent = ExecuteHelpers.getAllRowsOfTable("relationDB");
+        ArrayList<String> relationDBcontent = ExecuteHelpers.getAllRowsOfTable("relationDB")[0];
         StringBuffer contents = new StringBuffer();
         for(String desc : relationDBcontent) {
             renderDescOfSingleRelation(contents, desc);

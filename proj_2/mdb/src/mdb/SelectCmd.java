@@ -9,6 +9,7 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentNotFoundException;
 import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
+import minidb.je.PredicateHelpers;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -25,11 +26,6 @@ public class SelectCmd extends Select {
         super.execute();
 
         System.out.println(getContentsOfSelectedTables());
-    }
-
-    private List<String> getContentsofSingleTable(Database relationDB, AstCursor c, DatabaseEntry relationMetaData) throws UnsupportedEncodingException {
-
-        return ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
     }
 
     private String getContentsOfSelectedTables() {
@@ -53,44 +49,17 @@ public class SelectCmd extends Select {
                 if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
                     return("\nRelation not present : " + relationName);
                 fromRelations.add(relationName);
-                List<String> data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
-                String[] meta = (data.remove(0)).split(",", 2);
-                // relationName -> ["relationName.col1", "relationName.col2" ...]
-                String[] columnNameAndType = meta[1].split(",");
-                String columnNames[] = new String[columnNameAndType.length];
-                String columnTypes[] = new String[columnNameAndType.length];
-                for(int i = 0; i < columnNameAndType.length; i++) {
-                    columnNames[i] = meta[0] + "." + columnNameAndType[i].split(":")[0];
-                    columnTypes[i] = columnNameAndType[i].split(":")[1];
-                }
-                metaColumnRelation.put(meta[0], columnNames);
-                metaColumnTypeRelation.put(meta[0], columnTypes);
-                List<String[]> rows = new ArrayList<String[]>();
-                for(String s: data) rows.add(s.split(","));
-                // relationName -> [["val1","val2"], ["val1","val2"]...]
-                allRowsOfRelations.put(meta[0], rows);
+                List<String> data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"))[0];
+                PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data);
             }
 
-            String[] projections = getProj_list().toString().split(",");
             List<String> projWithRelationName = new ArrayList<String>();
-            for(String p : projections) {
-                p = p.trim();
-                if(p.contains(".")) {
-                        projWithRelationName.add(p);
-                } else if(p.contains("*")) {
-                    for(String relName: metaColumnRelation.keySet())
-                        for(String cols: metaColumnRelation.get(relName))
-                            projWithRelationName.add(cols);
-                } else {
-                    if(fromRelations.size() > 1)
-                        return(p+" is not linked with any relation in projection. Prefix table with '.'");
-                    projWithRelationName.add(fromRelations.get(0)+"."+p);
-                }
-            }
+
+            findProjectionList(metaColumnRelation, fromRelations, projWithRelationName);
 
             applyLocalPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, fromRelations);
 
-            applyJoinPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, fromRelations);
+            applyJoinPredicates(allRowsOfRelations, metaColumnRelation);
 
             applyCrossProducts(allRowsOfRelations, metaColumnRelation);
 
@@ -107,6 +76,24 @@ public class SelectCmd extends Select {
             myDbEnv.close();
         }
         return contents;
+    }
+
+    private void findProjectionList(Map<String, String[]> metaColumnRelation, List<String> fromRelations, List<String> projWithRelationName) {
+        String[] projections = getProj_list().toString().split(",");
+        for(String p : projections) {
+            p = p.trim();
+            if(p.contains(".")) {
+                    projWithRelationName.add(p);
+            } else if(p.contains("*")) {
+                for(String relName: metaColumnRelation.keySet())
+                    for(String cols: metaColumnRelation.get(relName))
+                        projWithRelationName.add(cols);
+            } else {
+                if(fromRelations.size() > 1)
+                    System.err.println(p+" is not linked with any relation in projection. Prefix table with '.'");
+                projWithRelationName.add(fromRelations.get(0)+"."+p);
+            }
+        }
     }
 
     private void applyCrossProducts(Map<String, List<String[]>> allRowsOfRelations, Map<String, String[]> metaColumnRelation) {
@@ -152,60 +139,13 @@ public class SelectCmd extends Select {
                                       Map<String, String[]> metaColumnTypeRelation,
                                       List<String> fromRelations) {
         if(getWherePred() == null) return;
-        AstCursor c = new AstCursor();
-        Map<String, List<AstNode>> clauses = new HashMap<String, List<AstNode>>();
-        for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
-            AstNode node = c.node;
-            if(!(node instanceof JoinClause)) {
-                //local predicate
-                String relation = (node.arg[0] instanceof Rel_dot_field) ?
-                        node.arg[0].arg[0].toString().trim() : fromRelations.get(0).trim();
-                List<AstNode> clauseList = clauses.get(relation);
-                if(clauseList == null) clauseList = new ArrayList<AstNode>();
-                clauseList.add(node); clauses.put(relation, clauseList);
-            }
-        }
+        Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(fromRelations, getWherePred().arg[0]);
         if(clauses.isEmpty()) return;
         for(String relation: clauses.keySet()) {
-            int[] indices = new int[clauses.get(relation).size()];
-            for(int i = 0; i < indices.length; i++) {
-                indices[i] = -1;
-                String clauseName = clauses.get(relation).get(i).arg[0] instanceof Rel_dot_field ?
-                        clauses.get(relation).get(i).arg[0].toString().trim()
-                        : relation+"."+clauses.get(relation).get(i).arg[0].toString().trim();
-                for(int j = 0; j < metaColumnRelation.get(relation).length; j++) {
-                    if(clauseName.equals(metaColumnRelation.get(relation)[j])) {
-                        indices[i] = j; break;
-                    }
-                }
-            }
+            int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relation);
             List<String[]> filteredRows = new ArrayList<String[]>();
             for(String[] row: allRowsOfRelations.get(relation)) {
-                boolean keepRow = true;
-                for (int i = 0; i < indices.length; i++) {
-                    Rel operator = (Rel) clauses.get(relation).get(i).arg[1];
-                    String rhs1 = clauses.get(relation).get(i).arg[2].toString().trim();
-                    String col1 = row[indices[i]];
-                    if ("int".equals(metaColumnTypeRelation.get(relation)[indices[i]])) {
-                        int col = Integer.parseInt(col1);
-                        int rhs = Integer.parseInt(rhs1);
-                        if (
-                                (operator instanceof Equ && !(col == rhs)) ||
-                                        (operator instanceof Neq && !(col != rhs)) ||
-                                        (operator instanceof Geq && !(col >= rhs)) ||
-                                        (operator instanceof Leq && !(col <= rhs)) ||
-                                        (operator instanceof Lss && !(col < rhs)) ||
-                                        (operator instanceof Gtr && !(col > rhs)))
-                            keepRow = false;
-                    } else if (
-                            (operator instanceof Equ && !(col1.compareTo(rhs1) == 0)) ||
-                                    (operator instanceof Neq && !(col1.compareTo(rhs1) != 0)) ||
-                                    (operator instanceof Geq && !(col1.compareTo(rhs1) >= 0)) ||
-                                    (operator instanceof Leq && !(col1.compareTo(rhs1) <= 0)) ||
-                                    (operator instanceof Lss && !(col1.compareTo(rhs1) < 0)) ||
-                                    (operator instanceof Gtr && !(col1.compareTo(rhs1) > 0)))
-                        keepRow = false;
-                }
+                boolean keepRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relation), clauses, relation, indices, row);
                 if(keepRow) filteredRows.add(row);
             }
             allRowsOfRelations.put(relation, filteredRows);
@@ -231,7 +171,7 @@ public class SelectCmd extends Select {
         for(String[] row: allRowsOfRelations) {
             for(int j = 0; j < indices.length; j++) {
                 try {
-                    if(indices[j] != -1)contents.append(row[indices[j]]+"\t");
+                    if(indices[j] != -1)contents.append(row[indices[j]].replace("&&",",")+"\t");
                 } catch(ArrayIndexOutOfBoundsException e) {
                     contents.append("null\t");
                 }
@@ -242,9 +182,7 @@ public class SelectCmd extends Select {
     }
 
     private void applyJoinPredicates(Map<String, List<String[]>> allRowsOfRelations,
-                                     Map<String, String[]> metaColumnRelation,
-                                     Map<String, String[]> metaColumnTypeRelation,
-                                     List<String> fromRelations) {
+                                     Map<String, String[]> metaColumnRelation) {
         if(getWherePred() == null) return;
         class Join {
             AstNode lhs; AstNode rhs;
@@ -299,12 +237,6 @@ public class SelectCmd extends Select {
                     centerTableColumnArrays = new String[center_columns.length + metaColumnRelation.get(rhs_node).length];
                     System.arraycopy(center_columns, 0, centerTableColumnArrays, 0, center_columns.length);
                     System.arraycopy(metaColumnRelation.get(rhs_node), 0, centerTableColumnArrays, center_columns.length, metaColumnRelation.get(rhs_node).length);
-//                    centerTableColumns.addAll(Arrays.asList(metaColumnRelation.get(rhs_node)));
-
-//                    centerTableColumnTypeArrays = new String[metaColumnTypeRelation.get(centerNode).length + metaColumnTypeRelation.get(rhs_node).length];
-//                    System.arraycopy(metaColumnTypeRelation.get(centerNode), 0, centerTableColumnTypeArrays, 0, metaColumnTypeRelation.get(centerNode).length);
-//                    System.arraycopy(metaColumnTypeRelation.get(rhs_node), 0, centerTableColumnTypeArrays, metaColumnTypeRelation.get(centerNode).length, metaColumnTypeRelation.get(rhs_node).length);
-//                    centerTableColumnTypes.addAll(Arrays.asList(metaColumnTypeRelation.get(rhs_node)));
                 }
                 for (String[] row : allRowsOfRelations.get(centerNode)) {
                     String lhs_value = row[index_left];
@@ -334,24 +266,22 @@ public class SelectCmd extends Select {
                 for(String r: metaColumnRelation.keySet())
                     if(metaColumnRelation.get(r) == metaColumnRelation.get(rhs_node))
                         metaColumnRelation.put(r, centerTableColumnArrays);
-//                metaColumnTypeRelation.put(centerNode, centerTableColumnTypeArrays);
-//                metaColumnTypeRelation.put(rhs_node, centerTableColumnTypeArrays);
             }
         }
     }
 
     private String getContentsOfAllTables()
             throws DatabaseException {
-        ArrayList<String> relations = ExecuteHelpers.getAllRowsOfTable("relationDB");
+        ArrayList<String> relations = ExecuteHelpers.getAllRowsOfTable("relationDB")[0];
         StringBuffer displayString = new StringBuffer();
         for(int i = 0; i < relations.size(); i++) {
             String relationName = relations.get(i);
             //get rows from each relationName
-            List<String> rows = ExecuteHelpers.getSelectData(relationName);
+            List<String> rows = ExecuteHelpers.getSelectData(relationName)[0];
             String columns = rows.remove(0);
             displayString.append(columns.replaceFirst(",","\n(").replace(",","\t")+")\n");
             for(String s: rows)
-                displayString.append(s.replaceAll(",", "\t")+"\n");
+                displayString.append(s.replace(",", "\t").replace("&&",",")+"\n");
             displayString.append("\n-----------------------\n");
         }
         return displayString.toString();

@@ -35,9 +35,7 @@ public class InsertCmd extends Insert {
         StringBuffer dataString = new StringBuffer();
         AstCursor c = new AstCursor();
         for (c.FirstElement(getLiteral_list()); c.MoreElement(); c.NextElement()) {
-            String data = c.node.toString().trim().replaceAll(",", "&&");
-//            if(data.charAt(0) == '"' && data.charAt(data.length()-1) == '"')
-//                data = data.replaceAll("^\"|\"$", "");
+            String data = c.node.toString();
             dataString.append(data+",");
         }
         dataString = dataString.deleteCharAt(dataString.length()-1);
