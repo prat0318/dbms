@@ -9,7 +9,6 @@ import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +42,9 @@ public class UpdateCmd extends Update {
 
             PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data[0]);
 
-            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
-            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(fromRelations, getOne_rel_pred());
-            Map<String, List<AstNode>> assigns = PredicateHelpers.generateClauses(fromRelations, getAssign_list());
+//            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
+            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
+            Map<String, List<AstNode>> assigns = PredicateHelpers.generateClauses(relationName, getAssign_list());
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             int[] assignIndices = PredicateHelpers.setIndices(metaColumnRelation, assigns, relationName);

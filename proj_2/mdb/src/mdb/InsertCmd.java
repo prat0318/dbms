@@ -27,7 +27,7 @@ public class InsertCmd extends Insert {
         Database relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
 
         if(!ExecuteHelpers.isTablePresent(relationDB, relName)) {
-            System.out.println(relName + " is not created. Please first create it! :|");
+            System.err.println(relName + " is not created. Please first create it! :|");
             return;
         }
         relationDB.close();
@@ -42,7 +42,7 @@ public class InsertCmd extends Insert {
 
         Database insertDB = null;
         try {
-            DatabaseEntry theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + dataString.toString()).getBytes("UTF-8"));
+            DatabaseEntry theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + ":"+ dataString.toString()).getBytes("UTF-8"));
             DatabaseEntry theData = new DatabaseEntry(dataString.toString().getBytes("UTF-8"));
 
             insertDB = myDbEnv.getDB(relName + "DB", READ_WRITE);

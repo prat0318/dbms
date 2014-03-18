@@ -9,7 +9,6 @@ import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ public class DeleteCmd extends Delete {
             myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
             relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
             DatabaseEntry relationMetaData = new DatabaseEntry();
-            String relationName = getRel_name().toString();
+            String relationName = getRel_name().toString().trim();
             if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
                 System.err.println("\nRelation not present : " + relationName);
             List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
@@ -43,8 +42,8 @@ public class DeleteCmd extends Delete {
 
             PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data[0]);
 
-            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
-            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(fromRelations, getOne_rel_pred());
+//            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
+            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);

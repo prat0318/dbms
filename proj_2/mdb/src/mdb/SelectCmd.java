@@ -21,11 +21,14 @@ public class SelectCmd extends Select {
     final public static int ARG_LENGTH = 3 ;
     final public static int TOK_LENGTH = 3 ;
 
+    public static int totalRowCount = 0;
+
     public void execute () {
         
         super.execute();
 
         System.out.println(getContentsOfSelectedTables());
+        System.out.print(totalRowCount + " row(s) selected");
     }
 
     private String getContentsOfSelectedTables() {
@@ -41,15 +44,22 @@ public class SelectCmd extends Select {
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
             Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
             Map<String, List<String[]>> allRowsOfRelations = new HashMap<String, List<String[]>>();
+            c.FirstElement(getRel_list());
+            String firstRelation = c.node.toString().trim();
+            Map<String, List<AstNode>> clauses = null;
+            if(getWherePred() != null)
+                clauses = PredicateHelpers.generateClauses(firstRelation, getWherePred().arg[0]);
             List<String> fromRelations = new ArrayList<String>();
-            for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {
+            for (; c.MoreElement(); c.NextElement()) {
                 String relationName = c.node.toString().trim();
                 if(relationName.equals("ALL"))
                     return(getContentsOfAllTables());
                 if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
                     return("\nRelation not present : " + relationName);
                 fromRelations.add(relationName);
-                List<String> data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"))[0];
+                String relationDataString = new String(relationMetaData.getData(), "UTF-8");
+                List<AstNode> clausesList = clauses != null ? clauses.get(relationName) : null;
+                List<String> data = ExecuteHelpers.getSelectData(relationDataString, clausesList)[0];
                 PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data);
             }
 
@@ -57,7 +67,7 @@ public class SelectCmd extends Select {
 
             findProjectionList(metaColumnRelation, fromRelations, projWithRelationName);
 
-            applyLocalPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, fromRelations);
+            applyLocalPredicates(allRowsOfRelations, metaColumnRelation, metaColumnTypeRelation, clauses);
 
             applyJoinPredicates(allRowsOfRelations, metaColumnRelation);
 
@@ -137,15 +147,15 @@ public class SelectCmd extends Select {
     private void applyLocalPredicates(Map<String, List<String[]>> allRowsOfRelations,
                                       Map<String, String[]> metaColumnRelation,
                                       Map<String, String[]> metaColumnTypeRelation,
-                                      List<String> fromRelations) {
+                                      Map<String, List<AstNode>> clauses) {
         if(getWherePred() == null) return;
-        Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(fromRelations, getWherePred().arg[0]);
         if(clauses.isEmpty()) return;
         for(String relation: clauses.keySet()) {
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relation);
             List<String[]> filteredRows = new ArrayList<String[]>();
             for(String[] row: allRowsOfRelations.get(relation)) {
-                boolean keepRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relation), clauses, relation, indices, row);
+                boolean keepRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relation),
+                        clauses, relation, indices, row);
                 if(keepRow) filteredRows.add(row);
             }
             allRowsOfRelations.put(relation, filteredRows);
@@ -171,13 +181,15 @@ public class SelectCmd extends Select {
         for(String[] row: allRowsOfRelations) {
             for(int j = 0; j < indices.length; j++) {
                 try {
-                    if(indices[j] != -1)contents.append(row[indices[j]].replace("&&",",")+"\t");
+                    if(indices[j] != -1)
+                        contents.append(row[indices[j]].replace("&&",",")+"\t");
                 } catch(ArrayIndexOutOfBoundsException e) {
                     contents.append("null\t");
                 }
             }
             contents.append("\n");
         }
+        totalRowCount = allRowsOfRelations.size();
         return contents.toString();
     }
 
@@ -276,6 +288,8 @@ public class SelectCmd extends Select {
         StringBuffer displayString = new StringBuffer();
         for(int i = 0; i < relations.size(); i++) {
             String relationName = relations.get(i);
+            //skip index tables
+            if(relationName.contains(".")) continue;
             //get rows from each relationName
             List<String> rows = ExecuteHelpers.getSelectData(relationName)[0];
             String columns = rows.remove(0);

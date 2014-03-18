@@ -32,7 +32,7 @@ public class RelDecl extends Decl_rel {
 //            System.out.println(relName + " is already created. Try something else");
 //            return;
 //        }
-        StringBuffer dataString = new StringBuffer(relName+",");
+        StringBuilder dataString = new StringBuilder(relName+",");
         AstCursor c = new AstCursor();
         for (c.FirstElement(getFld_decl_list()); c.MoreElement(); c.NextElement())
             dataString.append(c.node.arg[0].toString().trim()+":"+c.node.arg[1].toString().trim()+",");
@@ -53,7 +53,7 @@ public class RelDecl extends Decl_rel {
             relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
 
             if(ExecuteHelpers.isTablePresent(relationDB, relName)) {
-                System.out.println(relName + " is already created. Try something else");
+                System.err.println(relName + " is already created. Try something else");
                 return;
             }
             relationDB.put(null, theRelKey, theRelData);

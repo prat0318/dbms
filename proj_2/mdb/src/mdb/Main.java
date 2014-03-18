@@ -319,7 +319,10 @@ public class Main {
             }
 //            ( ( SqlLang ) root ).print();
 //            System.out.println();
+            long startTime = System.currentTimeMillis();
             ( ( SqlLang ) root ).execute();
+            long endTime   = System.currentTimeMillis();
+            System.out.println(" (time taken = "+ (endTime - startTime)/1000.0 +" sec)");
             pw.flush();
 
             // Step 5.5: now dump the parse tree

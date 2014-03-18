@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class PredicateHelpers {
 
-    public static Map<String, List<AstNode>> generateClauses(List<String> fromRelations, AstNode e) {
+    public static Map<String, List<AstNode>> generateClauses(String firstRelation, AstNode e) {
         AstCursor c = new AstCursor();
         Map<String, List<AstNode>> clauses = new HashMap<String, List<AstNode>>();
         for (c.FirstElement(e); c.MoreElement(); c.NextElement() ) {
@@ -17,7 +17,8 @@ public class PredicateHelpers {
             if(!(node instanceof JoinClause)) {
                 //local predicate
                 String relation = (node.arg[0] instanceof Rel_dot_field) ?
-                        node.arg[0].arg[0].toString().trim() : fromRelations.get(0).trim();
+                        node.arg[0].arg[0].toString().trim() : firstRelation;  //if relation not given, assume only one table.
+                //create Map Entry for each relation
                 List<AstNode> clauseList = clauses.get(relation);
                 if(clauseList == null) clauseList = new ArrayList<AstNode>();
                 clauseList.add(node); clauses.put(relation, clauseList);
@@ -45,6 +46,7 @@ public class PredicateHelpers {
     public static boolean applyLocalPredicate(String[] metaColumnType, Map<String, List<AstNode>> clauses, String relation, int[] indices, String[] row) {
         boolean keepRow = true;
         for (int i = 0; i < indices.length; i++) {
+            //clauses.get(relation) is ArrayList
             Rel operator = (Rel) clauses.get(relation).get(i).arg[1];
             String rhs1 = clauses.get(relation).get(i).arg[2].toString().trim().replaceAll(",", "&&");
             String col1 = row[indices[i]];
@@ -71,7 +73,10 @@ public class PredicateHelpers {
         return keepRow;
     }
 
-    public static void formatData(Map<String, String[]> metaColumnRelation, Map<String, String[]> metaColumnTypeRelation, Map<String, List<String[]>> allRowsOfRelations, List<String> data) {
+    public static void formatData(Map<String, String[]> metaColumnRelation,
+                                  Map<String, String[]> metaColumnTypeRelation,
+                                  Map<String, List<String[]>> allRowsOfRelations,
+                                  List<String> data) {
         String[] meta = (data.remove(0)).split(",", 2);
         // relationName -> ["relationName.col1", "relationName.col2" ...]
         String[] columnNameAndType = meta[1].split(",");
