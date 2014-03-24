@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,15 +40,16 @@ public class UpdateCmd extends Update {
             String relationName = getRel_name().toString();
             if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
                 System.err.println("\nRelation not present : " + relationName);
-            List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
+
+            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
+            List<AstNode> clausesList = clauses != null ? clauses.get(relationName) : null;
+            List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"), clausesList);
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
             Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
             Map<String, List<String[]>> allRowsOfRelations = new HashMap<String, List<String[]>>();
 
             PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data[0]);
 
-//            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
-            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
             Map<String, List<AstNode>> assigns = PredicateHelpers.generateClauses(relationName, getAssign_list());
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
@@ -58,13 +58,14 @@ public class UpdateCmd extends Update {
             List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
+                String oldRow[] = allRowsOfRelations.get(relationName).get(j);
                 String row[] = allRowsOfRelations.get(relationName).get(j);
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
 
-                List<String> oldValues = new ArrayList<String>();
+//                List<String> oldValues = new ArrayList<String>();
                 if(updateRow)  {
                     for(int i = 0; i < assignIndices.length; i++) {
-                        oldValues.add(row[assignIndices[i]]);
+//                        oldValues.add(row[assignIndices[i]]);
                         row[assignIndices[i]] = assigns.get(relationName).get(i).arg[1].toString().trim().replaceAll(",", "&&");
                     }
                 } else
@@ -79,9 +80,11 @@ public class UpdateCmd extends Update {
                 DatabaseEntry theData = new DatabaseEntry((rowStr).toString().getBytes("UTF-8"));
                 updateDB.put(null, theKey, theData);
 
-                for(int i = 0; i < assignIndices.length; i++) {
-                    //delete the old data and add new data to index if updated column has index.
-                    String indexToCheck = ExecuteHelpers.sanitizeColumn(assigns.get(relationName).get(i).arg[0].toString(), relationName);
+                for(int i = 0; i < metaColumnRelation.get(relationName).length; i++) {
+                    String indexToCheck = metaColumnRelation.get(relationName)[i];
+//                for(int i = 0; i < assignIndices.length; i++) {
+//                    //delete the old data and add new data to index if updated column has index.
+//                    String indexToCheck = ExecuteHelpers.sanitizeColumn(assigns.get(relationName).get(i).arg[0].toString(), relationName);
                     Database indexDB = null;
                     if(indexes.contains(indexToCheck)) {
 //                      System.out.println("Old: "+ oldValue + "is being replaced with :"+ row[assignIndices[i]]);
@@ -89,7 +92,7 @@ public class UpdateCmd extends Update {
                             indexDB = myDbEnv.getDB(indexToCheck + "DB", READ_WRITE);
                             //Remove old
                             DatabaseEntry tempData = new DatabaseEntry();
-                            DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(oldValues.get(i)));
+                            DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(oldRow[i]));
                             indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
                             if(tempData.getSize() != 0) {
                                 ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
@@ -105,7 +108,7 @@ public class UpdateCmd extends Update {
                             }
                             //Add new
                             tempData = new DatabaseEntry();
-                            indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[assignIndices[i]]));
+                            indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i]));
                             ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
                             DataOutputStream out = new DataOutputStream(bOutput);
                             indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);

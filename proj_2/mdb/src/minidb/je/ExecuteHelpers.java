@@ -57,7 +57,7 @@ public class ExecuteHelpers {
             String relationName = relationData.split(",")[0];
             colName = sanitizeColumn(colName, relationName);
             if(operator instanceof Equ && isTablePresent(relationDB, colName)) {
-                System.out.println("Going to use index... " + colName);
+//                System.out.println("Going to use index... " + colName);
                 ArrayList<String>[] returnVal = new ArrayList[2];
                 returnVal[0] = new ArrayList<String>(); returnVal[1] = new ArrayList<String>();
                 returnVal[0].add(relationData);

@@ -40,15 +40,15 @@ public class DeleteCmd extends Delete {
             String relationName = getRel_name().toString().trim();
             if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
                 System.err.println("\nRelation not present : " + relationName);
-            List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"));
+            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
+            List<AstNode> clausesList = clauses != null ? clauses.get(relationName) : null;
+            List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"), clausesList);
+
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
             Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
             Map<String, List<String[]>> allRowsOfRelations = new HashMap<String, List<String[]>>();
 
             PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data[0]);
-
-//            List<String> fromRelations = new ArrayList<String>(); fromRelations.add(relationName);
-            Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);
@@ -68,7 +68,7 @@ public class DeleteCmd extends Delete {
                                 indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
                                 //Remove old
                                 DatabaseEntry tempData = new DatabaseEntry();
-                                DatabaseEntry indexKey = new DatabaseEntry(row[i].getBytes("UTF-8")); // row[i] is value
+                                DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i])); // row[i] is value
                                 indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
                                 if(tempData.getSize() != 0) {
                                     ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
