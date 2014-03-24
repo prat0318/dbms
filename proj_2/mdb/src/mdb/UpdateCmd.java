@@ -5,10 +5,16 @@ package mdb;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,16 +59,70 @@ public class UpdateCmd extends Update {
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
                 String row[] = allRowsOfRelations.get(relationName).get(j);
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
-                if(updateRow)
-                    for(int i = 0; i < assignIndices.length; i++)
+                List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
+
+                List<String> oldValues = new ArrayList<String>();
+                if(updateRow)  {
+                    for(int i = 0; i < assignIndices.length; i++) {
+                        oldValues.add(row[assignIndices[i]]);
                         row[assignIndices[i]] = assigns.get(relationName).get(i).arg[1].toString().trim().replaceAll(",", "&&");
+                    }
+                } else
+                    continue;
                 StringBuffer rowStr = new StringBuffer();
                 for(int i = 0; i < row.length - 1; i++) rowStr.append(row[i]+",");
                 rowStr.append(row[row.length-1]);
                 DatabaseEntry theKey = new DatabaseEntry((data[1].get(j)).getBytes("UTF-8"));
-                DatabaseEntry theData = new DatabaseEntry((rowStr).toString().getBytes("UTF-8"));
+                updateDB.delete(null, theKey);
 
+                theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + ":"+ rowStr.toString()).getBytes("UTF-8"));
+                DatabaseEntry theData = new DatabaseEntry((rowStr).toString().getBytes("UTF-8"));
                 updateDB.put(null, theKey, theData);
+
+                for(int i = 0; i < assignIndices.length; i++) {
+                    //delete the old data and add new data to index if updated column has index.
+                    String indexToCheck = ExecuteHelpers.sanitizeColumn(assigns.get(relationName).get(i).arg[0].toString(), relationName);
+                    Database indexDB = null;
+                    if(indexes.contains(indexToCheck)) {
+//                      System.out.println("Old: "+ oldValue + "is being replaced with :"+ row[assignIndices[i]]);
+                        try{
+                            indexDB = myDbEnv.getDB(indexToCheck + "DB", READ_WRITE);
+                            //Remove old
+                            DatabaseEntry tempData = new DatabaseEntry();
+                            DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(oldValues.get(i)));
+                            indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                            if(tempData.getSize() != 0) {
+                                ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
+                                DataInputStream in = new DataInputStream(bais);
+                                ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+                                DataOutputStream out = new DataOutputStream(bOutput);
+                                while (in.available() > 0) {
+                                    String storedData = in.readUTF();
+                                    if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
+                                }
+                                theData = new DatabaseEntry(bOutput.toByteArray());
+                                indexDB.put(null, indexKey, theData);
+                            }
+                            //Add new
+                            tempData = new DatabaseEntry();
+                            indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[assignIndices[i]]));
+                            ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+                            DataOutputStream out = new DataOutputStream(bOutput);
+                            indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                            if(tempData.getSize() != 0) {
+                                ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
+                                DataInputStream in = new DataInputStream(bais);
+                                while (in.available() > 0)
+                                    out.writeUTF(in.readUTF());
+                            }
+                            out.writeUTF(ExecuteHelpers.stringify(theKey));
+                            theData = new DatabaseEntry(bOutput.toByteArray());
+                            indexDB.put(null, indexKey, theData);
+                        } finally {
+                            if(indexDB != null) indexDB.close();
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
