@@ -250,6 +250,19 @@ public class SelectCmd extends Select {
                     System.arraycopy(center_columns, 0, centerTableColumnArrays, 0, center_columns.length);
                     System.arraycopy(metaColumnRelation.get(rhs_node), 0, centerTableColumnArrays, center_columns.length, metaColumnRelation.get(rhs_node).length);
                 }
+                //ToDo: If !internal -> create HASHMAP of rhs
+                Map<String, ArrayList<String[]>> row_rhs_hash = new HashMap<String, ArrayList<String[]>>();
+                if(!internal) {
+                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
+                        ArrayList<String[]> rhs_data;
+                        if(row_rhs_hash.containsKey(row_rhs[index_right]))
+                            rhs_data = row_rhs_hash.get(row_rhs[index_right]);
+                        else
+                            rhs_data = new ArrayList<String[]>();
+                        rhs_data.add(row_rhs);
+                        row_rhs_hash.put(row_rhs[index_right], rhs_data);
+                    }
+                }
                 for (String[] row : allRowsOfRelations.get(centerNode)) {
                     String lhs_value = row[index_left];
                     if(internal) {
@@ -257,14 +270,23 @@ public class SelectCmd extends Select {
                             joinedTable.add(row);
                         continue;
                     }
-                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
-                        if(lhs_value.equals(row_rhs[index_right])) {
+                    //ToDo: Instead of Complete Loop, check in the hash !!
+                    if(row_rhs_hash.containsKey(lhs_value)) {
+                        for(String[] row_rhs: row_rhs_hash.get(lhs_value)) {
                             String[] combine = new String[row.length + row_rhs.length];
                             System.arraycopy(row, 0, combine, 0, row.length);
                             System.arraycopy(row_rhs, 0, combine, row.length, row_rhs.length);
                             joinedTable.add(combine);
                         }
                     }
+//                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
+//                        if(lhs_value.equals(row_rhs[index_right])) {
+//                            String[] combine = new String[row.length + row_rhs.length];
+//                            System.arraycopy(row, 0, combine, 0, row.length);
+//                            System.arraycopy(row_rhs, 0, combine, row.length, row_rhs.length);
+//                            joinedTable.add(combine);
+//                        }
+//                    }
                 }
                 for(String r: allRowsOfRelations.keySet())
                     if(allRowsOfRelations.get(r) == allRowsOfRelations.get(centerNode))
