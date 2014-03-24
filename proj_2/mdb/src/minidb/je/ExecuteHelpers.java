@@ -116,7 +116,7 @@ public class ExecuteHelpers {
 
         String dbName = columnData[0]+"DB";
         try{
-            ArrayList<String> tuples[] = ExecuteHelpers.getAllRowsOfTable(dbName, columnTypes);
+            ArrayList<String> tuples[] = ExecuteHelpers.getAllRowsOfTable(dbName);
             returnVal[1] = tuples[1];
             for(String s : tuples[0])
                 displayList.add(s);

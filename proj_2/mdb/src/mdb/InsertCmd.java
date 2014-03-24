@@ -10,6 +10,7 @@ import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static minidb.je.ExecuteHelpers.READ_WRITE;
@@ -34,15 +35,27 @@ public class InsertCmd extends Insert {
             return;
         }
         relationDB.close();
+        String[] columns = new String[0];
+        try {
+            columns = new String(relMetaData.getData(),  "UTF-8").split(",");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         StringBuffer dataString = new StringBuffer();
         AstCursor c = new AstCursor();
+        List<String> row = new ArrayList<String>();
         for (c.FirstElement(getLiteral_list()); c.MoreElement(); c.NextElement()) {
             String data = c.node.toString().trim().replaceAll(",", "&&");
             dataString.append(data+",");
+            row.add(data);
         }
         dataString = dataString.deleteCharAt(dataString.length()-1);
 
+        if(row.size() != (columns.length-1)) {       //Skip first element: tableName
+            System.err.println("Inserted values Count("+row.size()+") doesn't match the table schema! ("+(columns.length-1)+")");
+            return;
+        }
         Database insertDB = null;
         try {
             DatabaseEntry theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + ":"+ dataString.toString()).getBytes("UTF-8"));
@@ -52,27 +65,29 @@ public class InsertCmd extends Insert {
             insertDB.put(null, theKey, theData);
             List<String> indexes = ExecuteHelpers.getAllIndexes(relName);
 
-            for(int i = 0; i < metaColumnRelation.get(relName).length; i++) {
-                String relPlusColumnName = metaColumnRelation.get(relName)[i];
+            for(int i = 1; i < columns.length; i++) {
+                String column = columns[i].split(":")[0];
+                String relPlusColumnName = relName + "." + column;
                 Database indexDB = null;
                 if(indexes.contains(relPlusColumnName)) {
                     try{
                         indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
                         //Remove old
                         DatabaseEntry tempData = new DatabaseEntry();
-                        DatabaseEntry indexKey = new DatabaseEntry(row[i].getBytes("UTF-8")); // row[i] is value
+                        DatabaseEntry indexKey = new DatabaseEntry(row.get(i-1).getBytes("UTF-8")); // row[i] is value
+                        ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(bOutput);
                         indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
                         if(tempData.getSize() != 0) {
                             ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
                             DataInputStream in = new DataInputStream(bais);
-                            ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
-                            DataOutputStream out = new DataOutputStream(bOutput);
-                            while (in.available() > 0) {
-                                String storedData = in.readUTF();
-                                if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
-                            }
-                            indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                            while (in.available() > 0)
+                                out.writeUTF(in.readUTF());
                         }
+                        out.writeUTF(ExecuteHelpers.stringify(theKey));
+                        indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     } finally {
                         if(indexDB != null) indexDB.close();
                     }
