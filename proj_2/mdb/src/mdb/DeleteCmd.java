@@ -58,7 +58,7 @@ public class DeleteCmd extends Delete {
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
                 DatabaseEntry theKey = new DatabaseEntry((data[1].get(j)).getBytes("UTF-8"));
                 if(updateRow) {
-                    updateDB.delete(null, theKey);
+                    updateDB.delete(ExecuteHelpers.txn, theKey);
                     for(int i = 0; i < metaColumnRelation.get(relationName).length; i++) {
                         String relPlusColumnName = metaColumnRelation.get(relationName)[i];
                         Database indexDB = null;
@@ -68,7 +68,7 @@ public class DeleteCmd extends Delete {
                                 //Remove old
                                 DatabaseEntry tempData = new DatabaseEntry();
                                 DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i])); // row[i] is value
-                                indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                                indexDB.get(ExecuteHelpers.txn, indexKey, tempData, LockMode.DEFAULT);
                                 if(tempData.getSize() != 0) {
                                     ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
                                     DataInputStream in = new DataInputStream(bais);
@@ -78,7 +78,7 @@ public class DeleteCmd extends Delete {
                                         String storedData = in.readUTF();
                                         if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
                                     }
-                                    indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                                    indexDB.put(ExecuteHelpers.txn, indexKey, new DatabaseEntry(bOutput.toByteArray()));
                                 }
                             } finally {
                                 if(indexDB != null) indexDB.close();

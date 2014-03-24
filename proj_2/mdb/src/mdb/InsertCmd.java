@@ -61,7 +61,7 @@ public class InsertCmd extends Insert {
             DatabaseEntry theData = new DatabaseEntry(dataString.toString().getBytes("UTF-8"));
 
             insertDB = ExecuteHelpers.myDbEnv.getDB(relName + "DB", READ_WRITE);
-            insertDB.put(null, theKey, theData);
+            insertDB.put(ExecuteHelpers.txn, theKey, theData);
             List<String> indexes = ExecuteHelpers.getAllIndexes(relName);
 
             for(int i = 1; i < columns.length; i++) {
@@ -76,7 +76,7 @@ public class InsertCmd extends Insert {
                         DatabaseEntry indexKey = new DatabaseEntry(row.get(i-1).getBytes("UTF-8")); // row[i] is value
                         ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
                         DataOutputStream out = new DataOutputStream(bOutput);
-                        indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                        indexDB.get(ExecuteHelpers.txn, indexKey, tempData, LockMode.DEFAULT);
                         if(tempData.getSize() != 0) {
                             ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
                             DataInputStream in = new DataInputStream(bais);
@@ -84,7 +84,7 @@ public class InsertCmd extends Insert {
                                 out.writeUTF(in.readUTF());
                         }
                         out.writeUTF(ExecuteHelpers.stringify(theKey));
-                        indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                        indexDB.put(ExecuteHelpers.txn, indexKey, new DatabaseEntry(bOutput.toByteArray()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {

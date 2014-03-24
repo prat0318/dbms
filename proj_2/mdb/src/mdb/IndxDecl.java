@@ -43,7 +43,7 @@ public class IndxDecl extends Decl_ind {
             String indexMetaData = relationName+",pm_keys:str";
             DatabaseEntry theData = new DatabaseEntry((indexMetaData).getBytes("UTF-8"));
 
-            relationDB.put(null, theKey, theData);
+            relationDB.put(ExecuteHelpers.txn, theKey, theData);
 
             //fill it up
             ExecuteHelpers.populateIndex(relationName, metaData);

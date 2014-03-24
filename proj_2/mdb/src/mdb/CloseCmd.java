@@ -3,6 +3,8 @@
 
 package mdb;
 
+import minidb.je.ExecuteHelpers;
+
 import java.io.File;
 
 import static minidb.je.ExecuteHelpers.myDbEnvPath;
@@ -16,7 +18,7 @@ public class CloseCmd extends Close {
         
         super.execute();
         myDbEnvPath = new File("JEDB");
-
+        ExecuteHelpers.prepareDB();
     }
 
     public AstToken getCLOSE () {

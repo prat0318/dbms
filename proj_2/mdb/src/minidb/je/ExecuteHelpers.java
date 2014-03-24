@@ -23,7 +23,15 @@ public class ExecuteHelpers {
 
     static {
         myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-//        txn = myDbEnv.getEnv().beginTransaction(null, null);
+        txn = myDbEnv.getEnv().beginTransaction(null, null);
+    }
+
+    public static void prepareDB() {
+        ExecuteHelpers.txn.abort();
+        ExecuteHelpers.myDbEnv.close(); ExecuteHelpers.myDbEnv = new MyDbEnv();
+        ExecuteHelpers.myDbEnv.setup(myDbEnvPath, ExecuteHelpers.READ_WRITE);
+        ExecuteHelpers.txn = ExecuteHelpers.myDbEnv.getEnv().beginTransaction(null, null);
+        ExecuteHelpers.allRelations = ExecuteHelpers.getAllRowsOfTable("relationDB");
     }
 
     public static ArrayList<String>[] allRelations = getAllRowsOfTable("relationDB");
@@ -45,7 +53,7 @@ public class ExecuteHelpers {
         DatabaseEntry theRelKey = null;
         try {
             theRelKey = new DatabaseEntry((relationName).getBytes("UTF-8"));
-            relationDB.get(null, theRelKey, tempData, LockMode.DEFAULT);
+            relationDB.get(ExecuteHelpers.txn, theRelKey, tempData, LockMode.DEFAULT);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -76,7 +84,7 @@ public class ExecuteHelpers {
                 Database indexedRelnDB = ExecuteHelpers.myDbEnv.getDB(relationName + "DB", READ_ONLY);
                 try {
                     DatabaseEntry theRelKey = new DatabaseEntry(bytify(rhs));
-                    indexDB.get(null, theRelKey, tempData, LockMode.DEFAULT);
+                    indexDB.get(ExecuteHelpers.txn, theRelKey, tempData, LockMode.DEFAULT);
                     if(tempData.getSize() == 0) {
 //                        System.out.println("No results from index!");
                         return returnVal;
@@ -88,7 +96,7 @@ public class ExecuteHelpers {
 //                        System.out.println("---> : " + element);
                         returnVal[1].add(element);
                         DatabaseEntry pm_key = new DatabaseEntry(bytify(element));
-                        indexedRelnDB.get(null, pm_key, tempData, LockMode.DEFAULT);
+                        indexedRelnDB.get(ExecuteHelpers.txn, pm_key, tempData, LockMode.DEFAULT);
 //                        System.out.println("===> : " + stringify(tempData));
                         if(tempData.getSize() != 0) returnVal[0].add(stringify(tempData));
                     }
@@ -160,7 +168,7 @@ public class ExecuteHelpers {
 
         // Get a cursor
         Database database = ExecuteHelpers.myDbEnv.getDB(relation, READ_ONLY);
-        Cursor cursor = database.openCursor(null, null);
+        Cursor cursor = database.openCursor(ExecuteHelpers.txn, null);
 
         // DatabaseEntry objects used for reading records
         DatabaseEntry foundKey = new DatabaseEntry();
@@ -229,7 +237,7 @@ public class ExecuteHelpers {
                     out.writeUTF(element);
                 }
                 DatabaseEntry theData = new DatabaseEntry(bOutput.toByteArray());
-                insertDB.put(null, theKey, theData);
+                insertDB.put(ExecuteHelpers.txn, theKey, theData);
             }
 
         } catch (Exception e) {

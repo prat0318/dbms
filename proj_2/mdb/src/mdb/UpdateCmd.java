@@ -74,11 +74,11 @@ public class UpdateCmd extends Update {
                 for(int i = 0; i < row.length - 1; i++) rowStr.append(row[i]+",");
                 rowStr.append(row[row.length-1]);
                 DatabaseEntry theKey = new DatabaseEntry((data[1].get(j)).getBytes("UTF-8"));
-                updateDB.delete(null, theKey);
+                updateDB.delete(ExecuteHelpers.txn, theKey);
 
                 theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + ":"+ rowStr.toString()).getBytes("UTF-8"));
                 DatabaseEntry theData = new DatabaseEntry((rowStr).toString().getBytes("UTF-8"));
-                updateDB.put(null, theKey, theData);
+                updateDB.put(ExecuteHelpers.txn, theKey, theData);
 
                 for(int i = 0; i < metaColumnRelation.get(relationName).length; i++) {
                     String indexToCheck = metaColumnRelation.get(relationName)[i];
@@ -93,7 +93,7 @@ public class UpdateCmd extends Update {
                             //Remove old
                             DatabaseEntry tempData = new DatabaseEntry();
                             DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(oldRow[i]));
-                            indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                            indexDB.get(ExecuteHelpers.txn, indexKey, tempData, LockMode.DEFAULT);
                             if(tempData.getSize() != 0) {
                                 ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
                                 DataInputStream in = new DataInputStream(bais);
@@ -108,7 +108,7 @@ public class UpdateCmd extends Update {
                                         out.writeUTF(storedData);
                                 }
                                 theData = new DatabaseEntry(bOutput.toByteArray());
-                                indexDB.put(null, indexKey, theData);
+                                indexDB.put(ExecuteHelpers.txn, indexKey, theData);
                             }
                             //if both are equal, this column not changed.
                             //Key is updated earlier, just ignore.
@@ -119,7 +119,7 @@ public class UpdateCmd extends Update {
                             indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i]));
                             ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
                             DataOutputStream out = new DataOutputStream(bOutput);
-                            indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                            indexDB.get(ExecuteHelpers.txn, indexKey, tempData, LockMode.DEFAULT);
                             if(tempData.getSize() != 0) {
                                 ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
                                 DataInputStream in = new DataInputStream(bais);
@@ -128,7 +128,7 @@ public class UpdateCmd extends Update {
                             }
                             out.writeUTF(ExecuteHelpers.stringify(theKey));
                             theData = new DatabaseEntry(bOutput.toByteArray());
-                            indexDB.put(null, indexKey, theData);
+                            indexDB.put(ExecuteHelpers.txn, indexKey, theData);
                         } finally {
                             if(indexDB != null) indexDB.close();
                         }

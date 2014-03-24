@@ -57,7 +57,7 @@ public class RelDecl extends Decl_rel {
                 System.err.println(relName + " is already created. Try something else");
                 return;
             }
-            relationDB.put(null, theRelKey, theRelData);
+            relationDB.put(ExecuteHelpers.txn, theRelKey, theRelData);
             System.out.println("Successfully inserted ... " + r.getRelationName());
         } catch (Exception e) {
             e.printStackTrace();
