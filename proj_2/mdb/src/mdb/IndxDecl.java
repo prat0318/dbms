@@ -48,7 +48,8 @@ public class IndxDecl extends Decl_ind {
 
             //fill it up
             ExecuteHelpers.populateIndex(relationName, metaData);
-            System.out.println("Successfully created index ... " + relationName);
+//            System.out.println("Successfully created index ... " + relationName);
+            ExecuteHelpers.allRelations = ExecuteHelpers.getAllRowsOfTable("relationDB");
         } catch (Exception e) {
             e.printStackTrace();
         }  finally {

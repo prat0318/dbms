@@ -21,6 +21,8 @@ public class RelDecl extends Decl_rel {
         super.execute();
 
         createNewRelation();
+        ExecuteHelpers.allRelations = ExecuteHelpers.getAllRowsOfTable("relationDB");
+
     }
 
     private void createNewRelation() {

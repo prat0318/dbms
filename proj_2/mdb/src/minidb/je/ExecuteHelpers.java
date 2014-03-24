@@ -16,9 +16,18 @@ public class ExecuteHelpers {
     public static final boolean READ_WRITE = false;
 
     public static File myDbEnvPath = new File("JEDB");
+    public static ArrayList<String>[] allRelations = getAllRowsOfTable("relationDB");
 
     public static boolean isTablePresent(Database relationDB, String relationName) {
         return isTablePresent(relationDB, relationName, new DatabaseEntry());
+    }
+
+    public static List<String> getAllIndexes(String relationName) {
+        List<String> relatedIndex =  new ArrayList<String>();
+        for(String relation: allRelations[1])
+            if(relation.startsWith(relationName+"."))
+                relatedIndex.add(relation);
+        return relatedIndex;
     }
 
     public static boolean isTablePresent(Database relationDB, String relationName, DatabaseEntry tempData) {
@@ -46,7 +55,7 @@ public class ExecuteHelpers {
             String colName = clause.arg[0].toString().trim();
             String rhs = clause.arg[2].toString().trim().replaceAll(",", "&&");
             String relationName = relationData.split(",")[0];
-            colName = colName.contains(".") ? colName : relationName + "." + colName;
+            colName = sanitizeColumn(colName, relationName);
             if(operator instanceof Equ && isTablePresent(relationDB, colName)) {
                 System.out.println("Going to use index... " + colName);
                 ArrayList<String>[] returnVal = new ArrayList[2];
@@ -71,7 +80,7 @@ public class ExecuteHelpers {
                         DatabaseEntry pm_key = new DatabaseEntry(bytify(element));
                         indexedRelnDB.get(null, pm_key, tempData, LockMode.DEFAULT);
 //                        System.out.println("===> : " + stringify(tempData));
-                        returnVal[0].add(stringify(tempData));
+                        if(tempData.getSize() != 0) returnVal[0].add(stringify(tempData));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -85,6 +94,10 @@ public class ExecuteHelpers {
             }
         }
         return getSelectData(relationData);
+    }
+
+    public static String sanitizeColumn(String colName, String relationName) {
+        return colName.contains(".") ? colName : relationName + "." + colName;
     }
 
     /*
