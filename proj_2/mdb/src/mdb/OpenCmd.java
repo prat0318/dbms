@@ -18,8 +18,10 @@ public class OpenCmd extends Open {
         
         super.execute();
         myDbEnvPath = new File(getSTRING_LITERAL().getTokenName().trim().replaceAll("^\"|\"$", ""));
-        if(!myDbEnvPath.exists())
-            myDbEnvPath.mkdirs(); //make directory if it doesn't exist yet
+        if(!myDbEnvPath.exists()) {
+            System.err.println("Database not found!");
+            return;
+        }
         ExecuteHelpers.prepareDB();
     }
 

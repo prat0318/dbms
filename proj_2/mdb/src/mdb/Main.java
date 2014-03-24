@@ -2,6 +2,7 @@ package mdb;
 
 import Jakarta.util.FixDosOutputStream;
 import Jakarta.util.Util;
+import minidb.je.SystemHelpers;
 
 import java.io.*;
 import java.net.URI;
@@ -197,8 +198,19 @@ public class Main {
                         }
                         i++;
                         break;
-                    }
-                    else
+                    } else if ( args[i].charAt( j ) == 'c' ) {
+                        //create database
+                        File path = new File(args[i+1].trim().replaceAll("^\"|\"$", ""));
+                        if(!path.exists())
+                            path.mkdirs(); //make directory if it doesn't exist yet
+                        i++;
+                        break;
+                    } else if ( args[i].charAt( j ) == 'd' ) {
+                        File path = new File(args[i+1].trim().replaceAll("^\"|\"$", ""));
+                        SystemHelpers.removeDirectory(path);
+                        i++;
+                        break;
+                    } else
                         usage();
                 }
             }
@@ -364,7 +376,7 @@ public class Main {
     }
     protected static void usage() {
         System.err.println( "Usage: java " + "$TEqn" +
-               ".Main [-f file]" );
+               ".Main [-f file] [-create dbname] [-delete dbname]" );
         System.err.println( "       -f for input from file" );
         System.exit( -10 );
     }
