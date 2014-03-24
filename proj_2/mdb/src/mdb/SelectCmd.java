@@ -8,7 +8,6 @@ import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentNotFoundException;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
 import java.io.UnsupportedEncodingException;
@@ -32,13 +31,13 @@ public class SelectCmd extends Select {
     }
 
     private String getContentsOfSelectedTables() {
-        MyDbEnv myDbEnv = new MyDbEnv();
+//        MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
         String contents = null;
 
         try {
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
-            relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
+//            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
             DatabaseEntry relationMetaData = new DatabaseEntry();
             AstCursor c = new AstCursor();
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
@@ -83,7 +82,7 @@ public class SelectCmd extends Select {
             e.printStackTrace();
         } finally {
             if(relationDB != null) relationDB.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
         return contents;
     }

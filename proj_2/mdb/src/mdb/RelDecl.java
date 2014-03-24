@@ -6,7 +6,6 @@ package mdb;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 import minidb.models.Relation;
 
 import static minidb.je.ExecuteHelpers.READ_WRITE;
@@ -44,15 +43,15 @@ public class RelDecl extends Decl_rel {
 
         DatabaseEntry theRelKey, theRelData;
         Database relationDB = null;
-        MyDbEnv myDbEnv = null;
+//        MyDbEnv myDbEnv = null;
 
         try {
-            myDbEnv = new MyDbEnv();
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+//            myDbEnv = new MyDbEnv();
+//            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
 //            theRelKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + "").getBytes("UTF-8"));
             theRelKey = new DatabaseEntry((relName).getBytes("UTF-8"));
             theRelData = new DatabaseEntry(r.data().getBytes("UTF-8"));
-            relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
 
             if(ExecuteHelpers.isTablePresent(relationDB, relName)) {
                 System.err.println(relName + " is already created. Try something else");
@@ -64,7 +63,7 @@ public class RelDecl extends Decl_rel {
             e.printStackTrace();
         } finally {
            relationDB.close();
-           myDbEnv.close();
+//           myDbEnv.close();
         }
     }
 

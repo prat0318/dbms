@@ -7,7 +7,6 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
 import java.io.ByteArrayInputStream;
@@ -29,13 +28,13 @@ public class UpdateCmd extends Update {
         
         super.execute();
 
-        MyDbEnv myDbEnv = new MyDbEnv();
+//        MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
         Database updateDB = null;
 
         try {
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-            relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
+//            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
             DatabaseEntry relationMetaData = new DatabaseEntry();
             String relationName = getRel_name().toString();
             if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
@@ -54,12 +53,13 @@ public class UpdateCmd extends Update {
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             int[] assignIndices = PredicateHelpers.setIndices(metaColumnRelation, assigns, relationName);
-            updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);
+            updateDB = ExecuteHelpers.myDbEnv.getDB(relationName+"DB", READ_WRITE);
             List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
-                String oldRow[] = allRowsOfRelations.get(relationName).get(j);
-                String row[] = allRowsOfRelations.get(relationName).get(j);
+                String[] row = allRowsOfRelations.get(relationName).get(j);
+                String oldRow[] = new String[row.length];
+                for(int k = 0; k < oldRow.length; k++) oldRow[k] = row[k];
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
 
 //                List<String> oldValues = new ArrayList<String>();
@@ -89,7 +89,7 @@ public class UpdateCmd extends Update {
                     if(indexes.contains(indexToCheck)) {
 //                      System.out.println("Old: "+ oldValue + "is being replaced with :"+ row[assignIndices[i]]);
                         try{
-                            indexDB = myDbEnv.getDB(indexToCheck + "DB", READ_WRITE);
+                            indexDB = ExecuteHelpers.myDbEnv.getDB(indexToCheck + "DB", READ_WRITE);
                             //Remove old
                             DatabaseEntry tempData = new DatabaseEntry();
                             DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(oldRow[i]));
@@ -101,11 +101,19 @@ public class UpdateCmd extends Update {
                                 DataOutputStream out = new DataOutputStream(bOutput);
                                 while (in.available() > 0) {
                                     String storedData = in.readUTF();
-                                    if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
+                                    if(storedData.equals(data[1].get(j))) {
+                                        if(oldRow[i].equals(row[i]))     //if both are equal, this column not changed.
+                                            out.writeUTF(ExecuteHelpers.stringify(theKey));
+                                    } else
+                                        out.writeUTF(storedData);
                                 }
                                 theData = new DatabaseEntry(bOutput.toByteArray());
                                 indexDB.put(null, indexKey, theData);
                             }
+                            //if both are equal, this column not changed.
+                            //Key is updated earlier, just ignore.
+                            if(oldRow[i].equals(row[i]))
+                                continue;
                             //Add new
                             tempData = new DatabaseEntry();
                             indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i]));
@@ -132,7 +140,7 @@ public class UpdateCmd extends Update {
         } finally {
             if(relationDB != null) relationDB.close();
             if(updateDB != null) updateDB.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
     }
 

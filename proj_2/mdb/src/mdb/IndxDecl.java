@@ -6,7 +6,6 @@ package mdb;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 
 import static minidb.je.ExecuteHelpers.READ_WRITE;
 
@@ -24,11 +23,11 @@ public class IndxDecl extends Decl_ind {
         String relationName = rel + "." + col;
 
         //Check if index is already present
-        MyDbEnv myDbEnv = new MyDbEnv();
+//        MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
         try {
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-            relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
+//            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
             if(ExecuteHelpers.isTablePresent(relationDB, relationName)) {
                 System.err.println("\nIndex already present : " + relationName);
                 return;
@@ -54,7 +53,7 @@ public class IndxDecl extends Decl_ind {
             e.printStackTrace();
         }  finally {
             if(relationDB != null) relationDB.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
     }
 

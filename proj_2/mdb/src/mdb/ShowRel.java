@@ -6,7 +6,6 @@ package mdb;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 
 import java.io.UnsupportedEncodingException;
 
@@ -25,18 +24,21 @@ public class ShowRel extends Show {
     }
 
     private String showDescOfRelation(String relationName) {
-        MyDbEnv myDbEnv = new MyDbEnv();
-        Database relationDB;
+//        MyDbEnv myDbEnv = new MyDbEnv();
+        Database relationDB = null;
+//        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
+        try{
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
 
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
-        relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
-
-        DatabaseEntry dataEntry = new DatabaseEntry();
-        boolean isRelPresent = ExecuteHelpers.isTablePresent(relationDB, relationName, dataEntry);
-        if(isRelPresent)
-            return renderDataEntry(dataEntry);
-        else
-            return "Relation "+getRel_name()+" not present";
+            DatabaseEntry dataEntry = new DatabaseEntry();
+            boolean isRelPresent = ExecuteHelpers.isTablePresent(relationDB, relationName, dataEntry);
+            if(isRelPresent)
+                return renderDataEntry(dataEntry);
+            else
+                return "Relation "+getRel_name()+" not present";
+        } finally {
+            if(relationDB != null) relationDB.close();
+        }
     }
 
     private String renderDataEntry(DatabaseEntry dataEntry) {

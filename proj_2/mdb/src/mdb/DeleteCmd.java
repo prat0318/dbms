@@ -7,7 +7,6 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
 import java.io.ByteArrayInputStream;
@@ -29,13 +28,13 @@ public class DeleteCmd extends Delete {
         
         super.execute();
 
-        MyDbEnv myDbEnv = new MyDbEnv();
+//        MyDbEnv myDbEnv = new MyDbEnv();
         Database relationDB = null;
         Database updateDB = null;
 
         try {
-            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-            relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
+//            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
             DatabaseEntry relationMetaData = new DatabaseEntry();
             String relationName = getRel_name().toString().trim();
             if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
@@ -51,7 +50,7 @@ public class DeleteCmd extends Delete {
             PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data[0]);
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
-            updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);
+            updateDB = ExecuteHelpers.myDbEnv.getDB(relationName+"DB", READ_WRITE);
             List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
@@ -65,7 +64,7 @@ public class DeleteCmd extends Delete {
                         Database indexDB = null;
                         if(indexes.contains(relPlusColumnName)) {
                             try{
-                                indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
+                                indexDB = ExecuteHelpers.myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
                                 //Remove old
                                 DatabaseEntry tempData = new DatabaseEntry();
                                 DatabaseEntry indexKey = new DatabaseEntry(ExecuteHelpers.bytify(row[i])); // row[i] is value
@@ -93,7 +92,7 @@ public class DeleteCmd extends Delete {
         } finally {
             if(relationDB != null) relationDB.close();
             if(updateDB != null) updateDB.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
 
     }

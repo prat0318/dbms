@@ -4,6 +4,7 @@
 package mdb;
 
 import minidb.je.ExecuteHelpers;
+import minidb.je.MyDbEnv;
 
 import java.io.File;
 
@@ -20,6 +21,8 @@ public class OpenCmd extends Open {
         myDbEnvPath = new File(getSTRING_LITERAL().getTokenName().trim().replaceAll("^\"|\"$", ""));
         if(!myDbEnvPath.exists())
             myDbEnvPath.mkdirs(); //make directory if it doesn't exist yet
+        ExecuteHelpers.myDbEnv.close(); ExecuteHelpers.myDbEnv = new MyDbEnv();
+        ExecuteHelpers.myDbEnv.setup(myDbEnvPath, ExecuteHelpers.READ_WRITE);
         ExecuteHelpers.allRelations = ExecuteHelpers.getAllRowsOfTable("relationDB");
     }
 

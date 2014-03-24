@@ -7,7 +7,6 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
-import minidb.je.MyDbEnv;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,9 +24,9 @@ public class InsertCmd extends Insert {
         super.execute();
         String relName = getRel_name().toString().trim();
 
-        MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-        Database relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
+//        MyDbEnv myDbEnv = new MyDbEnv();
+//        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
 
         DatabaseEntry relMetaData = new DatabaseEntry();
         if(!ExecuteHelpers.isTablePresent(relationDB, relName, relMetaData)) {
@@ -61,7 +60,7 @@ public class InsertCmd extends Insert {
             DatabaseEntry theKey = new DatabaseEntry(((System.currentTimeMillis() / 1000L) + ":"+ dataString.toString()).getBytes("UTF-8"));
             DatabaseEntry theData = new DatabaseEntry(dataString.toString().getBytes("UTF-8"));
 
-            insertDB = myDbEnv.getDB(relName + "DB", READ_WRITE);
+            insertDB = ExecuteHelpers.myDbEnv.getDB(relName + "DB", READ_WRITE);
             insertDB.put(null, theKey, theData);
             List<String> indexes = ExecuteHelpers.getAllIndexes(relName);
 
@@ -71,7 +70,7 @@ public class InsertCmd extends Insert {
                 Database indexDB = null;
                 if(indexes.contains(relPlusColumnName)) {
                     try{
-                        indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
+                        indexDB = ExecuteHelpers.myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
                         //Remove old
                         DatabaseEntry tempData = new DatabaseEntry();
                         DatabaseEntry indexKey = new DatabaseEntry(row.get(i-1).getBytes("UTF-8")); // row[i] is value
@@ -97,8 +96,8 @@ public class InsertCmd extends Insert {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
-            insertDB.close();
-            myDbEnv.close();
+            if(insertDB != null) insertDB.close();
+//            myDbEnv.close();
         }
 
     }

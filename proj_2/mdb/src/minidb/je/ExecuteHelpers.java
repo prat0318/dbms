@@ -16,6 +16,16 @@ public class ExecuteHelpers {
     public static final boolean READ_WRITE = false;
 
     public static File myDbEnvPath = new File("JEDB");
+
+    public static MyDbEnv myDbEnv = new MyDbEnv();
+
+    public static Transaction txn = null;
+
+    static {
+        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+//        txn = myDbEnv.getEnv().beginTransaction(null, null);
+    }
+
     public static ArrayList<String>[] allRelations = getAllRowsOfTable("relationDB");
 
     public static boolean isTablePresent(Database relationDB, String relationName) {
@@ -46,9 +56,9 @@ public class ExecuteHelpers {
     public static ArrayList<String>[] getSelectData(String relationData, List<AstNode> clauses) {
         if(clauses == null)
             return getSelectData(relationData);
-        MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
-        Database relationDB = myDbEnv.getDB("relationDB", READ_ONLY);
+//        MyDbEnv myDbEnv = new MyDbEnv();
+//        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
+        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
 
         for(AstNode clause: clauses) {
             Rel operator = (Rel) clause.arg[1];
@@ -62,8 +72,8 @@ public class ExecuteHelpers {
                 returnVal[0] = new ArrayList<String>(); returnVal[1] = new ArrayList<String>();
                 returnVal[0].add(relationData);
                 DatabaseEntry tempData = new DatabaseEntry();
-                Database indexDB = myDbEnv.getDB(colName + "DB", READ_ONLY);
-                Database indexedRelnDB = myDbEnv.getDB(relationName + "DB", READ_ONLY);
+                Database indexDB = ExecuteHelpers.myDbEnv.getDB(colName + "DB", READ_ONLY);
+                Database indexedRelnDB = ExecuteHelpers.myDbEnv.getDB(relationName + "DB", READ_ONLY);
                 try {
                     DatabaseEntry theRelKey = new DatabaseEntry(bytify(rhs));
                     indexDB.get(null, theRelKey, tempData, LockMode.DEFAULT);
@@ -88,7 +98,7 @@ public class ExecuteHelpers {
                     indexDB.close();
                     indexedRelnDB.close();
                     relationDB.close();
-                    myDbEnv.close();
+//                    myDbEnv.close();
                 }
                 return returnVal;
             }
@@ -145,11 +155,11 @@ public class ExecuteHelpers {
         ArrayList<String> tuplesKey = new ArrayList<String>();
         ArrayList[] returnVal = new ArrayList[2];
         returnVal[0] = tuples; returnVal[1] = tuplesKey;
-        MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(myDbEnvPath, READ_ONLY);
+//        MyDbEnv myDbEnv = new MyDbEnv();
+//        myDbEnv.setup(myDbEnvPath, READ_ONLY);
 
         // Get a cursor
-        Database database = myDbEnv.getDB(relation, READ_ONLY);
+        Database database = ExecuteHelpers.myDbEnv.getDB(relation, READ_ONLY);
         Cursor cursor = database.openCursor(null, null);
 
         // DatabaseEntry objects used for reading records
@@ -172,7 +182,7 @@ public class ExecuteHelpers {
         } finally {
             cursor.close();
             database.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
         return returnVal;
     }
@@ -203,11 +213,11 @@ public class ExecuteHelpers {
             map.get(colValue).add(relIds.get(i));
         }
 
-        MyDbEnv myDbEnv = new MyDbEnv();
-        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
+//        MyDbEnv myDbEnv = new MyDbEnv();
+//        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
 
         Database insertDB = null;
-        insertDB = myDbEnv.getDB(indexName + "DB", READ_WRITE);
+        insertDB = ExecuteHelpers.myDbEnv.getDB(indexName + "DB", READ_WRITE);
         String somekey = "";
         try {
             for(String key: map.keySet()) {
@@ -226,7 +236,7 @@ public class ExecuteHelpers {
             e.printStackTrace();
         } finally {
             insertDB.close();
-            myDbEnv.close();
+//            myDbEnv.close();
         }
     }
 
