@@ -45,6 +45,7 @@ public class ShowDb extends Show {
     private String showDescOfAllRelations() {
         ArrayList<String> relationDBcontent = ExecuteHelpers.getAllRowsOfTable("relationDB")[0];
         StringBuffer contents = new StringBuffer();
+        System.out.println();
         for(String desc : relationDBcontent) {
             renderDescOfSingleRelation(contents, desc);
         }
@@ -53,15 +54,15 @@ public class ShowDb extends Show {
 
     static void renderDescOfSingleRelation(StringBuffer contents, String desc) {
         String[] splitDesc = desc.split(",");
-        contents.append("Table: "+ splitDesc[0] + "\n\n");
+        contents.append("Relation:"+ splitDesc[0] + "\n");
         if(splitDesc.length > 1) {
             contents.append("Field, Type\n");
             for(int i = 1; i < splitDesc.length; i++) {
                 String[] splitField = splitDesc[i].split(":");
-                contents.append(splitField[0] + ", "+ splitField[1]+"\n");
+                contents.append(splitField[0] + ","+ splitField[1]+"\n");
             }
         }
-        contents.append("--------------\n");
+        contents.append("\n");
     }
 
     public AstToken getSEMI () {

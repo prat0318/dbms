@@ -174,14 +174,14 @@ public class SelectCmd extends Select {
                     break;
                 }
             }
-            if(indices[i] != -1) contents.append(projWithRelationName.get(i)+"\t");
+            if(indices[i] != -1) contents.append(projWithRelationName.get(i)+",");
         }
-        contents.append("\n------------------------\n");
+        contents.append("\n");
         for(String[] row: allRowsOfRelations) {
             for(int j = 0; j < indices.length; j++) {
                 try {
                     if(indices[j] != -1)
-                        contents.append(row[indices[j]].replace("&&",",")+"\t");
+                        contents.append(row[indices[j]].replace("&&",",")+",");
                 } catch(ArrayIndexOutOfBoundsException e) {
                     contents.append("null\t");
                 }
@@ -314,10 +314,10 @@ public class SelectCmd extends Select {
             //get rows from each relationName
             List<String> rows = ExecuteHelpers.getSelectData(relationName)[0];
             String columns = rows.remove(0);
-            displayString.append(columns.replaceFirst(",","\n(").replace(",","\t")+")\n");
+            displayString.append(columns.replaceFirst(",","\n") + "\n");
             for(String s: rows)
-                displayString.append(s.replace(",", "\t").replace("&&",",")+"\n");
-            displayString.append("\n-----------------------\n");
+                displayString.append(s.replace("&&",",")+"\n");
+            displayString.append("\n");
         }
         return displayString.toString();
     }
