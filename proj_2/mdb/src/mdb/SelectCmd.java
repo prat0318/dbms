@@ -51,7 +51,7 @@ public class SelectCmd extends Select {
                 clauses = PredicateHelpers.generateClauses(firstRelation, getWherePred().arg[0]);
             List<String> fromRelations = new ArrayList<String>();
             for (; c.MoreElement(); c.NextElement()) {
-                String relationName = c.node.toString().trim();
+                String relationName = c.node.toString().trim().replace("DOT",".");
                 if(relationName.equals("ALL"))
                     return(getContentsOfAllTables());
                 if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))

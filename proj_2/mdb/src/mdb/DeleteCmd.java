@@ -5,10 +5,15 @@ package mdb;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 import minidb.je.PredicateHelpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +52,41 @@ public class DeleteCmd extends Delete {
 
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);
+            List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
                 String row[] = allRowsOfRelations.get(relationName).get(j);
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
                 DatabaseEntry theKey = new DatabaseEntry((data[1].get(j)).getBytes("UTF-8"));
-                if(updateRow) updateDB.delete(null, theKey);
+                if(updateRow) {
+                    updateDB.delete(null, theKey);
+                    for(int i = 0; i < metaColumnRelation.get(relationName).length; i++) {
+                        String relPlusColumnName = metaColumnRelation.get(relationName)[i];
+                        Database indexDB = null;
+                        if(indexes.contains(relPlusColumnName)) {
+                            try{
+                                indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
+                                //Remove old
+                                DatabaseEntry tempData = new DatabaseEntry();
+                                DatabaseEntry indexKey = new DatabaseEntry(row[i].getBytes("UTF-8")); // row[i] is value
+                                indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                                if(tempData.getSize() != 0) {
+                                    ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
+                                    DataInputStream in = new DataInputStream(bais);
+                                    ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+                                    DataOutputStream out = new DataOutputStream(bOutput);
+                                    while (in.available() > 0) {
+                                        String storedData = in.readUTF();
+                                        if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
+                                    }
+                                    indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                                }
+                            } finally {
+                                if(indexDB != null) indexDB.close();
+                            }
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

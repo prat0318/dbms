@@ -5,10 +5,12 @@ package mdb;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.LockMode;
 import minidb.je.ExecuteHelpers;
 import minidb.je.MyDbEnv;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.util.List;
 
 import static minidb.je.ExecuteHelpers.READ_WRITE;
 
@@ -26,7 +28,8 @@ public class InsertCmd extends Insert {
         myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
         Database relationDB = myDbEnv.getDB("relationDB", READ_WRITE);
 
-        if(!ExecuteHelpers.isTablePresent(relationDB, relName)) {
+        DatabaseEntry relMetaData = new DatabaseEntry();
+        if(!ExecuteHelpers.isTablePresent(relationDB, relName, relMetaData)) {
             System.err.println(relName + " is not created. Please first create it! :|");
             return;
         }
@@ -47,6 +50,34 @@ public class InsertCmd extends Insert {
 
             insertDB = myDbEnv.getDB(relName + "DB", READ_WRITE);
             insertDB.put(null, theKey, theData);
+            List<String> indexes = ExecuteHelpers.getAllIndexes(relName);
+
+            for(int i = 0; i < metaColumnRelation.get(relName).length; i++) {
+                String relPlusColumnName = metaColumnRelation.get(relName)[i];
+                Database indexDB = null;
+                if(indexes.contains(relPlusColumnName)) {
+                    try{
+                        indexDB = myDbEnv.getDB(relPlusColumnName + "DB", READ_WRITE);
+                        //Remove old
+                        DatabaseEntry tempData = new DatabaseEntry();
+                        DatabaseEntry indexKey = new DatabaseEntry(row[i].getBytes("UTF-8")); // row[i] is value
+                        indexDB.get(null, indexKey, tempData, LockMode.DEFAULT);
+                        if(tempData.getSize() != 0) {
+                            ByteArrayInputStream bais = new ByteArrayInputStream(tempData.getData());
+                            DataInputStream in = new DataInputStream(bais);
+                            ByteArrayOutputStream bOutput = new ByteArrayOutputStream();
+                            DataOutputStream out = new DataOutputStream(bOutput);
+                            while (in.available() > 0) {
+                                String storedData = in.readUTF();
+                                if(!storedData.equals(data[1].get(j))) out.writeUTF(storedData);
+                            }
+                            indexDB.put(null, indexKey, new DatabaseEntry(bOutput.toByteArray()));
+                        }
+                    } finally {
+                        if(indexDB != null) indexDB.close();
+                    }
+                }
+            }
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

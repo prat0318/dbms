@@ -55,11 +55,11 @@ public class UpdateCmd extends Update {
             int[] indices = PredicateHelpers.setIndices(metaColumnRelation, clauses, relationName);
             int[] assignIndices = PredicateHelpers.setIndices(metaColumnRelation, assigns, relationName);
             updateDB = myDbEnv.getDB(relationName+"DB", READ_WRITE);
+            List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
             for(int j = 0; j < allRowsOfRelations.get(relationName).size(); j++) {
                 String row[] = allRowsOfRelations.get(relationName).get(j);
                 boolean updateRow = PredicateHelpers.applyLocalPredicate(metaColumnTypeRelation.get(relationName), clauses, relationName, indices, row);
-                List<String> indexes = ExecuteHelpers.getAllIndexes(relationName);
 
                 List<String> oldValues = new ArrayList<String>();
                 if(updateRow)  {

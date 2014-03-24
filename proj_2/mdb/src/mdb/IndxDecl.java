@@ -41,7 +41,7 @@ public class IndxDecl extends Decl_ind {
             }
 
             DatabaseEntry theKey = new DatabaseEntry((relationName).getBytes("UTF-8"));
-            String indexMetaData = relationName+",id:str,pm_keys:str";
+            String indexMetaData = relationName+",pm_keys:str";
             DatabaseEntry theData = new DatabaseEntry((indexMetaData).getBytes("UTF-8"));
 
             relationDB.put(null, theKey, theData);
