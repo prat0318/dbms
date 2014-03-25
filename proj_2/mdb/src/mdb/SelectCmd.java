@@ -202,6 +202,9 @@ public class SelectCmd extends Select {
                 this.rhs = rhs;
             }
         }
+//        Map <String, ArrayList<String>> dependents = new HashMap<String, ArrayList<String>>();
+//        for(String r: allRowsOfRelations.keySet())
+//                dependents.put(r, new ArrayList<String>());
         AstCursor c = new AstCursor();
         Map<String, List<Join>> clauses = new HashMap<String, List<Join>>();
         for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
@@ -269,6 +272,8 @@ public class SelectCmd extends Select {
                             joinedTable.add(row);
                         continue;
                     }
+//                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
+//                       if(lhs_value.equals(row_rhs[index_right])) {
                     //ToDo: Instead of Complete Loop, check in the hash !!
                     if(row_rhs_hash.containsKey(lhs_value)) {
                         for(String[] row_rhs: row_rhs_hash.get(lhs_value)) {
@@ -278,27 +283,42 @@ public class SelectCmd extends Select {
                             joinedTable.add(combine);
                         }
                     }
-//                    for(String[] row_rhs : allRowsOfRelations.get(rhs_node)) {
-//                        if(lhs_value.equals(row_rhs[index_right])) {
-//                            String[] combine = new String[row.length + row_rhs.length];
-//                            System.arraycopy(row, 0, combine, 0, row.length);
-//                            System.arraycopy(row_rhs, 0, combine, row.length, row_rhs.length);
-//                            joinedTable.add(combine);
-//                        }
-//                    }
                 }
+//                allRowsOfRelations.put(centerNode, joinedTable);
+//                dependents.get(centerNode).add(rhs_node); dependents.get(rhs_node).add(centerNode);
+//                List visited = new ArrayList(); visited.add(centerNode);
+//                broadcast(centerNode, dependents, allRowsOfRelations, joinedTable, visited);
+
                 for(String r: allRowsOfRelations.keySet())
-                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(centerNode))
+                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(centerNode) && !r.equals(centerNode))
                         allRowsOfRelations.put(r, joinedTable);
+                allRowsOfRelations.put(centerNode, joinedTable);
                 for(String r: allRowsOfRelations.keySet())
-                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(rhs_node))
+                    if(allRowsOfRelations.get(r) == allRowsOfRelations.get(rhs_node) && !r.equals(rhs_node))
                         allRowsOfRelations.put(r, joinedTable);
+                allRowsOfRelations.put(rhs_node, joinedTable);
                 for(String r: metaColumnRelation.keySet())
-                    if(metaColumnRelation.get(r) == metaColumnRelation.get(centerNode))
+                    if(metaColumnRelation.get(r) == metaColumnRelation.get(centerNode) && !r.equals(centerNode))
                         metaColumnRelation.put(r, centerTableColumnArrays);
+                metaColumnRelation.put(centerNode, centerTableColumnArrays);
                 for(String r: metaColumnRelation.keySet())
-                    if(metaColumnRelation.get(r) == metaColumnRelation.get(rhs_node))
+                    if(metaColumnRelation.get(r) == metaColumnRelation.get(rhs_node) && !r.equals(rhs_node))
                         metaColumnRelation.put(r, centerTableColumnArrays);
+                metaColumnRelation.put(rhs_node, centerTableColumnArrays);
+            }
+        }
+    }
+
+    private void broadcast(String centerNode, Map<String,
+            ArrayList<String>> dependents,
+                           Map<String, List<String[]>> allRowsOfRelations,
+                           List<String[]> joinedTable,
+                           List<String> visited) {
+        for(String dependantNode: dependents.get(centerNode)) {
+            if(!visited.contains(dependantNode)) {
+                allRowsOfRelations.put(dependantNode, joinedTable);
+                visited.add(dependantNode);
+                broadcast(dependantNode, dependents, allRowsOfRelations, joinedTable, visited);
             }
         }
     }
@@ -316,7 +336,7 @@ public class SelectCmd extends Select {
             String columns = rows.remove(0);
             displayString.append(columns.replaceFirst(",","\n") + "\n");
             for(String s: rows)
-                displayString.append(s.replace("&&",",")+"\n");
+                displayString.append(s.replace("&&", ",")+"\n");
             displayString.append("\n");
         }
         return displayString.toString();
