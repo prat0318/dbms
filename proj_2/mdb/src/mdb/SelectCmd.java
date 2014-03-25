@@ -202,9 +202,6 @@ public class SelectCmd extends Select {
                 this.rhs = rhs;
             }
         }
-//        Map <String, ArrayList<String>> dependents = new HashMap<String, ArrayList<String>>();
-//        for(String r: allRowsOfRelations.keySet())
-//                dependents.put(r, new ArrayList<String>());
         AstCursor c = new AstCursor();
         Map<String, List<Join>> clauses = new HashMap<String, List<Join>>();
         for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
@@ -284,10 +281,6 @@ public class SelectCmd extends Select {
                         }
                     }
                 }
-//                allRowsOfRelations.put(centerNode, joinedTable);
-//                dependents.get(centerNode).add(rhs_node); dependents.get(rhs_node).add(centerNode);
-//                List visited = new ArrayList(); visited.add(centerNode);
-//                broadcast(centerNode, dependents, allRowsOfRelations, joinedTable, visited);
 
                 for(String r: allRowsOfRelations.keySet())
                     if(allRowsOfRelations.get(r) == allRowsOfRelations.get(centerNode) && !r.equals(centerNode))
