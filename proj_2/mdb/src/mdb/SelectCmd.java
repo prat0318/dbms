@@ -3,17 +3,12 @@
 
 package mdb;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.EnvironmentNotFoundException;
 import minidb.je.ExecuteHelpers;
 import minidb.je.PredicateHelpers;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
-
-import static minidb.je.ExecuteHelpers.READ_ONLY;
 
 public class SelectCmd extends Select {
 
@@ -32,35 +27,41 @@ public class SelectCmd extends Select {
 
     private String getContentsOfSelectedTables() {
 //        MyDbEnv myDbEnv = new MyDbEnv();
-        Database relationDB = null;
+//        Database relationDB = null;
         String contents = null;
 
         try {
 //            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
-            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
-            DatabaseEntry relationMetaData = new DatabaseEntry();
+//            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
+            StringBuilder relationMetaData = new StringBuilder();
             AstCursor c = new AstCursor();
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
             Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
             Map<String, List<String[]>> allRowsOfRelations = new HashMap<String, List<String[]>>();
-            c.FirstElement(getRel_list());
-            String firstRelation = c.node.toString().trim();
+
+            List<String> relationNames = new ArrayList<String>();
+            for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {
+                relationNames.add(c.node.toString().trim());
+            }
+
+//            String firstRelation = c.node.toString().trim();
             Map<String, List<AstNode>> clauses = null;
             if(getWherePred() != null)
-                clauses = PredicateHelpers.generateClauses(firstRelation, getWherePred().arg[0]);
+                clauses = PredicateHelpers.generateClauses(relationNames, getWherePred().arg[0]);
             List<String> fromRelations = new ArrayList<String>();
-            for (; c.MoreElement(); c.NextElement()) {
+            for (c.FirstElement(getRel_list()); c.MoreElement(); c.NextElement()) {
                 String relationName = c.node.toString().trim().replace("DOT",".");
                 if(relationName.equals("ALL"))
                     return(getContentsOfAllTables());
-                if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
+                if(!ExecuteHelpers.isTablePresent(relationName, relationMetaData))
                     return("\nRelation not present : " + relationName);
                 fromRelations.add(relationName);
-                String relationDataString = new String(relationMetaData.getData(), "UTF-8");
+                String relationDataString = new String(relationMetaData);
                 List<AstNode> clausesList = clauses != null ? clauses.get(relationName) : null;
                 List<String> data = ExecuteHelpers.getSelectData(relationDataString, clausesList)[0];
                 PredicateHelpers.formatData(metaColumnRelation, metaColumnTypeRelation, allRowsOfRelations, data);
             }
+
 
             List<String> projWithRelationName = new ArrayList<String>();
 
@@ -78,10 +79,8 @@ public class SelectCmd extends Select {
         } catch(EnvironmentNotFoundException e) {
             System.err.println("Database is currently empty!!.");
             return "";
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         } finally {
-            if(relationDB != null) relationDB.close();
+//            if(relationDB != null) relationDB.close();
 //            myDbEnv.close();
         }
         return contents;
@@ -98,9 +97,19 @@ public class SelectCmd extends Select {
                     for(String cols: metaColumnRelation.get(relName))
                         projWithRelationName.add(cols);
             } else {
-                if(fromRelations.size() > 1)
-                    System.err.println(p+" is not linked with any relation in projection. Prefix table with '.'");
-                projWithRelationName.add(fromRelations.get(0)+"."+p);
+                if(fromRelations.size() > 1) {
+                    boolean found = false;
+                    for(String relName: metaColumnRelation.keySet()) {
+                        for(String cols: metaColumnRelation.get(relName)) {
+                            if(cols.equals(relName+"."+p) && !found) {
+                                projWithRelationName.add(cols);
+                                found = true;
+                            }
+                        }
+                    }
+                    if(!found) System.err.println(p+" is not linked with any relation in projection. Prefix table with '.'");
+                } else
+                    projWithRelationName.add(fromRelations.get(0)+"."+p);
             }
         }
     }
@@ -195,11 +204,21 @@ public class SelectCmd extends Select {
     private void applyJoinPredicates(Map<String, List<String[]>> allRowsOfRelations,
                                      Map<String, String[]> metaColumnRelation) {
         if(getWherePred() == null) return;
+        class AstNodeClone {
+            String[] arg = new String[2];
+            AstNodeClone(AstNode a, Map<String, String[]> metaColumnRelation) {
+                arg = disambiguate(a, metaColumnRelation);
+            }
+
+            public String toString() {
+                return arg[0]+"."+arg[1];
+            }
+        }
         class Join {
-            AstNode lhs; AstNode rhs;
-            Join(AstNode lhs, AstNode rhs) {
-                this.lhs = lhs;
-                this.rhs = rhs;
+            AstNodeClone lhs; AstNodeClone rhs;
+            Join(AstNode lhs, AstNode rhs, Map<String, String[]> metaColumnRelation) {
+                this.lhs = new AstNodeClone(lhs, metaColumnRelation);
+                this.rhs = new AstNodeClone(rhs, metaColumnRelation);
             }
         }
         AstCursor c = new AstCursor();
@@ -207,19 +226,21 @@ public class SelectCmd extends Select {
         for (c.FirstElement(getWherePred().arg[0]); c.MoreElement(); c.NextElement() ) {
             AstNode node = c.node;
             if(node instanceof JoinClause) {
+                String[] lhs = disambiguate(node.arg[0], metaColumnRelation);
+                String[] rhs = disambiguate(node.arg[1], metaColumnRelation);
                 //local predicate
-                if(clauses.get(node.arg[0].arg[0].toString().trim()) != null) {
-                    List<Join> join_clauses = clauses.get(node.arg[0].arg[0].toString().trim());
-                    join_clauses.add(new Join(node.arg[0], node.arg[1]));
-                    clauses.put(node.arg[0].arg[0].toString().trim(), join_clauses);
-                } else if(clauses.get(node.arg[1].arg[0].toString().trim()) != null) {
-                    List<Join> join_clauses = clauses.get(node.arg[1].arg[0].toString().trim());
-                    join_clauses.add(new Join(node.arg[1], node.arg[0]));
-                    clauses.put(node.arg[1].arg[0].toString().trim(), join_clauses);
+                if(clauses.get(lhs[0].toString().trim()) != null) {
+                    List<Join> join_clauses = clauses.get(lhs[0].toString().trim());
+                    join_clauses.add(new Join(node.arg[0], node.arg[1], metaColumnRelation));
+                    clauses.put(lhs[0].toString().trim(), join_clauses);
+                } else if(clauses.get(rhs[0].toString().trim()) != null) {
+                    List<Join> join_clauses = clauses.get(rhs[0].toString().trim());
+                    join_clauses.add(new Join(node.arg[1], node.arg[0], metaColumnRelation));
+                    clauses.put(rhs[0].toString().trim(), join_clauses);
                 } else {
                     List<Join> join_clauses = new ArrayList<Join>();
-                    join_clauses.add(new Join(node.arg[0], node.arg[1]));
-                    clauses.put(node.arg[0].arg[0].toString().trim(), join_clauses);
+                    join_clauses.add(new Join(node.arg[0], node.arg[1], metaColumnRelation));
+                    clauses.put(lhs[0].toString().trim(), join_clauses);
                 }
             }
         }
@@ -299,6 +320,19 @@ public class SelectCmd extends Select {
                         metaColumnRelation.put(r, centerTableColumnArrays);
                 metaColumnRelation.put(rhs_node, centerTableColumnArrays);
             }
+        }
+    }
+
+    private String[] disambiguate(AstNode astNode, Map<String, String[]> metaColumnRelation) {
+        if(astNode instanceof FieldName) {
+            for(String reln : metaColumnRelation.keySet()) 
+                for(String column: metaColumnRelation.get(reln)) 
+                    if(column.equals(reln+"."+astNode.toString()))
+                        return new String[]{reln, astNode.toString()};
+            System.err.println("No match found for "+astNode);
+            return null;
+        } else {
+            return new String[]{astNode.arg[0].toString(),astNode.arg[1].toString()};
         }
     }
 

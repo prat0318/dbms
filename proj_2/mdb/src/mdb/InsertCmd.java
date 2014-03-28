@@ -26,20 +26,20 @@ public class InsertCmd extends Insert {
 
 //        MyDbEnv myDbEnv = new MyDbEnv();
 //        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
+//        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
 
-        DatabaseEntry relMetaData = new DatabaseEntry();
-        if(!ExecuteHelpers.isTablePresent(relationDB, relName, relMetaData)) {
+        StringBuilder relMetaData = new StringBuilder();
+        if(!ExecuteHelpers.isTablePresent(relName, relMetaData)) {
             System.err.println(relName + " is not created. Please first create it! :|");
             return;
         }
-        relationDB.close();
+//        relationDB.close();
         String[] columns = new String[0];
-        try {
-            columns = new String(relMetaData.getData(),  "UTF-8").split(",");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        try {
+            columns = relMetaData.toString().split(",");
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
 
         StringBuffer dataString = new StringBuffer();
         AstCursor c = new AstCursor();

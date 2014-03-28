@@ -54,7 +54,8 @@ public class ShowDb extends Show {
 
     static void renderDescOfSingleRelation(StringBuffer contents, String desc) {
         String[] splitDesc = desc.split(",");
-        contents.append("Relation:"+ splitDesc[0] + "\n");
+        if(splitDesc[0].contains(".")) contents.append("Index ");
+        contents.append("Relation: "+ splitDesc[0] + "\n");
         if(splitDesc.length > 1) {
             contents.append("Field, Type\n");
             for(int i = 1; i < splitDesc.length; i++) {

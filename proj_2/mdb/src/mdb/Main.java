@@ -329,7 +329,8 @@ public class Main {
                     System.out.println("Filename " + scriptName + " not found at " +   new File(scriptName).getAbsolutePath());
                 }
             }
-//            ( ( SqlLang ) root ).print();
+            ( ( SqlLang ) root ).print();
+            System.out.println();
 //            System.out.println();
             long startTime = System.currentTimeMillis();
             ( ( SqlLang ) root ).execute();

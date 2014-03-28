@@ -1,6 +1,5 @@
 #!/bin/sh
-rm -rf mdb/JEDB/*
 rm -rf mdb/don/*
 cd mdb
 javac -cp jakarta.jar:je-5.0.103.jar src/mdb/*.java src/minidb/models/*.java src/minidb/je/*.java
-java -cp jakarta.jar:je-5.0.103.jar:src mdb.Main -f ../tests/ddltest1.sql
+time java -cp jakarta.jar:je-5.0.103.jar:src mdb.Main -create don/mdb.database -f ../tests/test2.sql

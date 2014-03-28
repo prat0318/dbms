@@ -28,20 +28,20 @@ public class IndxDecl extends Decl_ind {
         try {
 //            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
             relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
-            if(ExecuteHelpers.isTablePresent(relationDB, relationName)) {
+            if(ExecuteHelpers.isTablePresent(relationName)) {
                 System.err.println("\nIndex already present : " + relationName);
                 return;
             }
             //create rel.col table
-            DatabaseEntry metaData = new DatabaseEntry();
-            if(!ExecuteHelpers.isTablePresent(relationDB, rel, metaData)) {
+            StringBuilder metaData = new StringBuilder();
+            if(!ExecuteHelpers.isTablePresent(rel, metaData)) {
                 System.err.println("\nTable doesn't exist : " + rel);
                 return;
             }
 
-            DatabaseEntry theKey = new DatabaseEntry((relationName).getBytes("UTF-8"));
+            DatabaseEntry theKey = new DatabaseEntry(ExecuteHelpers.bytify(relationName));
             String indexMetaData = relationName+",pm_keys:str";
-            DatabaseEntry theData = new DatabaseEntry((indexMetaData).getBytes("UTF-8"));
+            DatabaseEntry theData = new DatabaseEntry(ExecuteHelpers.bytify(indexMetaData));
 
             relationDB.put(ExecuteHelpers.txn, theKey, theData);
 

@@ -53,7 +53,7 @@ public class RelDecl extends Decl_rel {
             theRelData = new DatabaseEntry(r.data().getBytes("UTF-8"));
             relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
 
-            if(ExecuteHelpers.isTablePresent(relationDB, relName)) {
+            if(ExecuteHelpers.isTablePresent(relName)) {
                 System.err.println(relName + " is already created. Try something else");
                 return;
             }

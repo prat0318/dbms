@@ -29,19 +29,19 @@ public class DeleteCmd extends Delete {
         super.execute();
 
 //        MyDbEnv myDbEnv = new MyDbEnv();
-        Database relationDB = null;
+//        Database relationDB = null;
         Database updateDB = null;
 
         try {
 //            myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_WRITE);
-            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
-            DatabaseEntry relationMetaData = new DatabaseEntry();
+//            relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_WRITE);
+            StringBuilder relationMetaData = new StringBuilder();
             String relationName = getRel_name().toString().trim();
-            if(!ExecuteHelpers.isTablePresent(relationDB, relationName, relationMetaData))
+            if(!ExecuteHelpers.isTablePresent(relationName, relationMetaData))
                 System.err.println("\nRelation not present : " + relationName);
             Map<String, List<AstNode>> clauses = PredicateHelpers.generateClauses(relationName, getOne_rel_pred());
             List<AstNode> clausesList = clauses != null ? clauses.get(relationName) : null;
-            List<String>[] data = ExecuteHelpers.getSelectData(new String(relationMetaData.getData(), "UTF-8"), clausesList);
+            List<String>[] data = ExecuteHelpers.getSelectData(relationMetaData.toString(), clausesList);
 
             Map<String, String[]> metaColumnRelation = new HashMap<String, String[]>();
             Map<String, String[]> metaColumnTypeRelation = new HashMap<String, String[]>();
@@ -90,7 +90,7 @@ public class DeleteCmd extends Delete {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(relationDB != null) relationDB.close();
+//            if(relationDB != null) relationDB.close();
             if(updateDB != null) updateDB.close();
 //            myDbEnv.close();
         }

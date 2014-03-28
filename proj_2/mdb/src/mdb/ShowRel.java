@@ -4,10 +4,7 @@
 package mdb;
 
 import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
 import minidb.je.ExecuteHelpers;
-
-import java.io.UnsupportedEncodingException;
 
 import static minidb.je.ExecuteHelpers.READ_ONLY;
 
@@ -30,8 +27,8 @@ public class ShowRel extends Show {
         try{
             relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
 
-            DatabaseEntry dataEntry = new DatabaseEntry();
-            boolean isRelPresent = ExecuteHelpers.isTablePresent(relationDB, relationName, dataEntry);
+            StringBuilder dataEntry = new StringBuilder();
+            boolean isRelPresent = ExecuteHelpers.isTablePresent(relationName, dataEntry);
             if(isRelPresent)
                 return renderDataEntry(dataEntry);
             else
@@ -41,14 +38,14 @@ public class ShowRel extends Show {
         }
     }
 
-    private String renderDataEntry(DatabaseEntry dataEntry) {
+    private String renderDataEntry(StringBuilder dataEntry) {
         StringBuffer sb = new StringBuffer();
-        try {
-            String data = new String(dataEntry.getData(), "UTF-8");
+//        try {
+            String data = new String(dataEntry);
             ShowDb.renderDescOfSingleRelation(sb, data);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
         return sb.toString();
     }
 

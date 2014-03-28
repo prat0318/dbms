@@ -34,7 +34,32 @@ public class ExecuteHelpers {
         ExecuteHelpers.allRelations = ExecuteHelpers.getAllRowsOfTable("relationDB");
     }
 
+    public static String disambiguate(String col, List<String> relations) {
+        for(int i = 0; i < allRelations[0].size(); i++)
+            if(allRelations[0].get(i).contains(col) && relations.contains(allRelations[1].get(i)))
+                return allRelations[1].get(i)+"."+col;
+        System.err.println(col + " not found !");
+        return null;
+    }
+
     public static ArrayList<String>[] allRelations = getAllRowsOfTable("relationDB");
+
+    public static boolean isTablePresent(String relationName, StringBuilder metaData) {
+        for(int i = 0; i < allRelations[1].size(); i++)
+            if(allRelations[1].get(i).equals(relationName)) {
+                metaData.delete(0, metaData.length());
+                metaData.append(allRelations[0].get(i));
+                return true;
+            }
+        return false;
+    }
+
+    public static boolean isTablePresent(String relationName) {
+        for(int i = 0; i < allRelations[1].size(); i++)
+            if(allRelations[1].get(i).equals(relationName))
+                return true;
+        return false;
+    }
 
     public static boolean isTablePresent(Database relationDB, String relationName) {
         return isTablePresent(relationDB, relationName, new DatabaseEntry());
@@ -47,6 +72,7 @@ public class ExecuteHelpers {
                 relatedIndex.add(relation);
         return relatedIndex;
     }
+
 
     public static boolean isTablePresent(Database relationDB, String relationName, DatabaseEntry tempData) {
 
@@ -66,7 +92,7 @@ public class ExecuteHelpers {
             return getSelectData(relationData);
 //        MyDbEnv myDbEnv = new MyDbEnv();
 //        myDbEnv.setup(ExecuteHelpers.myDbEnvPath, READ_ONLY);
-        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
+//        Database relationDB = ExecuteHelpers.myDbEnv.getDB("relationDB", READ_ONLY);
 
         for(AstNode clause: clauses) {
             Rel operator = (Rel) clause.arg[1];
@@ -74,7 +100,7 @@ public class ExecuteHelpers {
             String rhs = clause.arg[2].toString().trim().replaceAll(",", "&&");
             String relationName = relationData.split(",")[0];
             colName = sanitizeColumn(colName, relationName);
-            if(operator instanceof Equ && isTablePresent(relationDB, colName)) {
+            if(operator instanceof Equ && isTablePresent(colName)) {
 //                System.out.println("Going to use index... " + colName);
                 ArrayList<String>[] returnVal = new ArrayList[2];
                 returnVal[0] = new ArrayList<String>(); returnVal[1] = new ArrayList<String>();
@@ -105,7 +131,7 @@ public class ExecuteHelpers {
                 } finally {
                     indexDB.close();
                     indexedRelnDB.close();
-                    relationDB.close();
+//                    relationDB.close();
 //                    myDbEnv.close();
                 }
                 return returnVal;
@@ -195,7 +221,7 @@ public class ExecuteHelpers {
         return returnVal;
     }
 
-    public static void populateIndex(String indexName, DatabaseEntry relMetaData) {
+    public static void populateIndex(String indexName, StringBuilder relMetaData) {
         String rel = indexName.split("\\.")[0];
         String col = indexName.split("\\.")[1];
 
@@ -204,7 +230,7 @@ public class ExecuteHelpers {
         List<String> relData = allRows[0];
         List<String> relIds = allRows[1];
 
-        String[] columns = stringify(relMetaData).split(",");
+        String[] columns = relMetaData.toString().split(",");
         //find column index number
         int colNum = -1;
         for(int i = 1; i < columns.length; i++)

@@ -9,7 +9,13 @@ import java.util.Map;
 
 public class PredicateHelpers {
 
-    public static Map<String, List<AstNode>> generateClauses(String firstRelation, AstNode e) {
+    public static Map<String, List<AstNode>> generateClauses(String relationName, AstNode e) {
+        List<String> list = new ArrayList<String>();
+        list.add(relationName);
+        return generateClauses(list, e);
+    }
+
+    public static Map<String, List<AstNode>> generateClauses(List<String> relationNames, AstNode e) {
         AstCursor c = new AstCursor();
         Map<String, List<AstNode>> clauses = new HashMap<String, List<AstNode>>();
         for (c.FirstElement(e); c.MoreElement(); c.NextElement() ) {
@@ -17,7 +23,7 @@ public class PredicateHelpers {
             if(!(node instanceof JoinClause)) {
                 //local predicate
                 String relation = (node.arg[0] instanceof Rel_dot_field) ?
-                        node.arg[0].arg[0].toString().trim() : firstRelation;  //if relation not given, assume only one table.
+                        node.arg[0].arg[0].toString().trim() : ExecuteHelpers.disambiguate(node.arg[0].toString(), relationNames).split("\\.")[0];
                 //create Map Entry for each relation
                 List<AstNode> clauseList = clauses.get(relation);
                 if(clauseList == null) clauseList = new ArrayList<AstNode>();
