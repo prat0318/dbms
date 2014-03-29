@@ -1,7 +1,79 @@
 Prateek Agarwal
 ---------------
 
-To execute:
+DESIGN DECISIONS TAKEN IN THE PROJECT
+-------------------------------------
 
-1) $ sh ./script
+1) Join Algorithm selection
+    For the last submission of the project, i went ahead with the 
+    nested loop join approach. Primarily becuase it was very simple
+    to implement. But i knew that it will break down when used for
+    joining large sized relations. The next two candidates were merge join
+    and hash join (grace hash join would have performed better but it involved
+    created own hash buckets, and other development overhead). Hash join
+    had a clean and elegant approach and can work effortlessly using Java's
+    HashMap. The only side-effect was the space used by the HashMap, but even
+    Merge join would have required a separate data structure to store the 
+    merged resultset. Thinking of this, i went ahead with Hash Join algorithm.
+    I created each row as an entry in an ArrayList for each key of the column.
+    And then, just a single iteration on the sink relation was needed. As merge
+    join would have also needed additional sorts of the relations (as values for 
+    index were stored as a Hash and not as a B-Tree), using it did not seem to be a 
+    valuable approach.
+
+    ASSUMPTION: For joins i assumed the rows i brought from BDB successfully could
+    be stored in Java as an ArrayList. The design will break if we start talking
+    about millions of rows and moderately allowed Java Heap size. Paging would have
+    solved it, but would have made the design far more complex, and there was a risk
+    of breaking old code and introducing subtle bugs. So, i just went against it.
+
+2) Index creation
+    BDB is more like a persistent key-value store. So, obvious choice for index
+    persistance seemed to use index relation as a simple key-value relation.
+    The key i used was the column value of the index and the value was the primary
+    key of the tuples separated from one-another by a delimiter. Use of the index
+    was then straight foreword. By querying BDB for the column value in the index
+    relation, i got all the primary keys and then i just needed to get the relations
+    for those primary keys. Creation of an index drastically improved the performace
+    of my queries (local predicates using indexed column). The performance improvement
+    was seen in SELECT, UPDATE, DELETE all the three kind of SQL statements.
+
+    Numbers: A simple SELECT query on test2.sql (10K rows) wass taking around 1.23 seconds
+    without an index which reduces to just 0.002 seconds with index. A thousand times
+    improvement!
+
+3) Index selection
+    Index selection makes more sense by implementing an optimizer which keeps sense of
+    the cardinality on the tuples to decide whether to use an index or just a full scan.
+    But the cardinality update should not happen simultaneously to insert or update queries,
+    instead during the leisure time of the database. This is because the performace of
+    the update/insert queries should not suffer because of this. As there was not much
+    scope of running a cron in mdb which would calculate the statistics in its leisure, 
+    i instead used a dumb approach, ie, use an index if available, else not. This decision
+    is taken on each relation which participates in the select query. But within a relation,
+    atmost one index is chosen.
+
+4) Self Join implementation
+    To make the database more flexible, i even implemented self joins, ie, joins of two
+    columns within a single relation. As i used sink approach to join relations one by 
+    one, self joins seamlessly got fit in the design. It could be treated like a self-loop.
+
+5) Improving the performance further...
+    One major change that i made during the last few days of the submission was caching
+    up the meta data of the relations. Earlier, i was collecting the meta-data of each
+    relation participating in the query by querying BDB each time. This did not make
+    sense, as the schema of the relation was not going to change. The only time i had to
+    recollect the meta data was when an index or a new relation was created. This change
+    worked very well, and i can see performance improvement by 100%.
+
+Summary:
+    It was a very challenging problem altogether. It led me to understand the database
+    design inside out and which algorithms should be used and when. Transaction handling 
+    was mostly given to us by BDB, solving it would have been interesting. Finally i would
+    say that the most happiest moment of the project was to see the first time your query
+    when run after applying index becomes thousand times faster. A priceless moment, i must say!
+
+
+Instructions to run:
+    $ sh ./script
 
