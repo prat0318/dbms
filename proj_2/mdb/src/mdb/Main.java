@@ -166,6 +166,7 @@ public class Main {
         ByteArrayInputStream is; // is and dis are used together
         DataInputStream      dis; // to "feed" the scanner.
         BufferedReader       userInput = null;
+        BufferedReader       lastUserInput = null;
 
         // Step 1: print the Marquee...
 
@@ -191,6 +192,7 @@ public class Main {
                         try {
                             userInput =
                            new BufferedReader( new FileReader( args[i+1] ) );
+                            lastUserInput = userInput;
                         }
                         catch ( Exception e ) {
                             System.err.println( "File " + args[i+1] + " not found:" 
@@ -241,7 +243,7 @@ public class Main {
  
         // Step 5: Get input and parse until an empty line is entered.
         //         An empty line is something with "." only.
-        boolean runningConsole = false; //to know that console needs to be switched back on.
+        boolean runningConsole = true; //to know that console needs to be switched back on.
         boolean runningScript = false; //to know that script is being run.
 
         if ( userInput == null ) {
@@ -262,19 +264,19 @@ public class Main {
                 line = "";
                 try {
                     line = userInput.readLine();
-                    if(runningScript) System.out.println(line);
+                    if(runningScript && line != null) System.out.println(line);
                 }
                 catch ( Exception e ) {
                     if (runningScript && runningConsole){
                         runningScript = false;
-                        userInput = new BufferedReader( new InputStreamReader( System.in ) );
+                        userInput = (lastUserInput == null) ? new BufferedReader( new InputStreamReader( System.in ) ): lastUserInput;
                         line = "";
                     }else { System.exit( 10 ); }
                 }
 
                 if(line == null && runningScript && runningConsole){
                     runningScript = false;
-                    userInput = new BufferedReader( new InputStreamReader( System.in ) );
+                    userInput = (lastUserInput == null) ? new BufferedReader( new InputStreamReader( System.in ) ): lastUserInput;
                     line = "";
                 }
 

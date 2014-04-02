@@ -1,0 +1,19 @@
+#!/bin/sh 
+scriptDir="/Users/bansal/Desktop/DB/bansal/cs386_P4/test/"
+cd src
+javac -cp $scriptDir/jakarta.jar:$scriptDir/je.jar:. mdb/*.java minidb/models/*.java minidb/je/*java
+
+STARTTIME=$(date +%s)
+time java -cp $scriptDir/jakarta.jar:$scriptDir/je.jar:. mdb.Main -create don -f $scriptDir/test1.sql > results1.dat
+ENDTIME=$(date +%s)
+echo "Query Set 1 $(($ENDTIME - $STARTTIME)) seconds" > Time.txt
+
+STARTTIME=$(date +%s)
+time java -cp /Users/bansal/Desktop/DB/bansal/cs386_P4/test/jakarta.jar:/Users/bansal/Desktop/DB/bansal/cs386_P4/test/je.jar:. mdb.Main -delete don -create don -f /Users/bansal/Desktop/DB/bansal/cs386_P4/test/test2.sql > results2.dat
+ENDTIME=$(date +%s)
+echo "Query Set 2 $(($ENDTIME - $STARTTIME)) seconds" >> Time.txt
+
+STARTTIME=$(date +%s)
+time java -cp /Users/bansal/Desktop/DB/bansal/cs386_P4/test/jakarta.jar:/Users/bansal/Desktop/DB/bansal/cs386_P4/test/je.jar:. mdb.Main -create don -f /Users/bansal/Desktop/DB/bansal/cs386_P4/test/test4.sql > results4.dat
+ENDTIME=$(date +%s)
+echo "Query Set 4 $(($ENDTIME - $STARTTIME)) seconds" >> Time.txt
