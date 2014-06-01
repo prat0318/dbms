@@ -1,6 +1,8 @@
 Database Systems (CS386D) 
 =========================
 
+## Project: Mini_DBMS
+
 Major part of the coursework was to design mini database using key-value store functionality of Oracle BDB database.
 
 That means, we have to implement the select, insert and delete queries and also the joins and cross-joins.
